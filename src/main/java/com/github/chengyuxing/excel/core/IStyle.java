@@ -1,4 +1,4 @@
-package org.rabbit.excel.core;
+package com.github.chengyuxing.excel.core;
 
 import org.apache.poi.xssf.model.StylesTable;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;

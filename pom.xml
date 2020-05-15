@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <description>Excel文件处理工具</description>
-    <groupId>org.rabbit</groupId>
+    <groupId>com.github.chengyuxing</groupId>
     <artifactId>rabbit-excel</artifactId>
-    <version>1.6.4xx</version>
+    <version>1.6.410</version>
 <!--    <version>1.6.314</version>-->
     <packaging>jar</packaging>
 
@@ -18,7 +18,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.rabbit</groupId>
+            <groupId>com.github.chengyuxing</groupId>
             <artifactId>rabbit-common</artifactId>
             <version>${rabbit.common.version}</version>
         </dependency>

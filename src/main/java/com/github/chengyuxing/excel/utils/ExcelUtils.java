@@ -1,9 +1,9 @@
-package org.rabbit.excel.utils;
+package com.github.chengyuxing.excel.utils;
 
+import com.github.chengyuxing.excel.core.Head;
 import org.apache.poi.ss.usermodel.*;
 import org.rabbit.common.types.DataRow;
 import org.rabbit.common.utils.ReflectUtil;
-import org.rabbit.excel.core.Head;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,8 +12,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-
-import static org.apache.poi.ss.usermodel.Cell.*;
 
 /**
  * Excel工具类

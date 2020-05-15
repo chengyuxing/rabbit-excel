@@ -1,17 +1,13 @@
 package tests;
 
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.FontScheme;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.xssf.model.StylesTable;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.junit.Test;
-import org.rabbit.excel.Excels;
-import org.rabbit.excel.core.ISheet;
-import org.rabbit.excel.core.IStyle;
+import com.github.chengyuxing.excel.Excels;
+import com.github.chengyuxing.excel.core.ISheet;
+import com.github.chengyuxing.excel.core.IStyle;
 
 import java.io.FileInputStream;
 import java.util.*;

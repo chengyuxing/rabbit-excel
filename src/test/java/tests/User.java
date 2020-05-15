@@ -1,6 +1,6 @@
 package tests;
 
-import org.rabbit.excel.core.Head;
+import com.github.chengyuxing.excel.core.Head;
 
 public class User {
     @Head("姓名")

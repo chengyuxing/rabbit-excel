@@ -1,4 +1,4 @@
-package org.rabbit.excel.core;
+package com.github.chengyuxing.excel.core;
 
 public class SheetMetaData {
     private int index;

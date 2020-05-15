@@ -1,5 +1,6 @@
-package org.rabbit.excel.core;
+package com.github.chengyuxing.excel.core;
 
+import com.github.chengyuxing.excel.utils.ExcelUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -14,8 +15,6 @@ import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.stream.Stream;
-
-import static org.rabbit.excel.utils.ExcelUtils.getValue;
 
 /**
  * Excel读取类
@@ -121,7 +120,7 @@ public class ExcelReader {
 
             for (int x = 0; x < header.length; x++) {
                 if (headerRow.getCell(x) != null) {
-                    header[x] = getValue(headerRow.getCell(x)).toString().toLowerCase();
+                    header[x] = ExcelUtils.getValue(headerRow.getCell(x)).toString().toLowerCase();
                 }
             }
             if (count < 1 || count > rowCount) {
@@ -134,7 +133,7 @@ public class ExcelReader {
                     String[] types = new String[header.length];
                     for (int x = 0, y = header.length; x < y; x++) {
                         if (row.getCell(x) != null) {
-                            value[x] = getValue(row.getCell(x));
+                            value[x] = ExcelUtils.getValue(row.getCell(x));
                             types[x] = value[x].getClass().getName();
                         } else {
                             value[x] = "";

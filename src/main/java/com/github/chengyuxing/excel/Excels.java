@@ -1,18 +1,17 @@
-package org.rabbit.excel;
+package com.github.chengyuxing.excel;
 
+import com.github.chengyuxing.excel.core.ExcelReader;
+import com.github.chengyuxing.excel.core.ISheet;
+import com.github.chengyuxing.excel.utils.ExcelUtils;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.rabbit.common.types.DataRow;
-import org.rabbit.excel.core.ExcelReader;
-import org.rabbit.excel.core.ISheet;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static org.rabbit.excel.utils.ExcelUtils.*;
 
 /**
  * Excel文件读写操作类
@@ -68,36 +67,36 @@ public final class Excels {
                 Class<?> elementType = s.getClazz();
                 if (List.class.isAssignableFrom(elementType)) {
                     List<List<Object>> data = (List<List<Object>>) s.getData();
-                    writeSheetOfList(sheet, data, s.getFillEmpty());
+                    ExcelUtils.writeSheetOfList(sheet, data, s.getFillEmpty());
                 } else if (Map.class.isAssignableFrom(elementType)) {
                     List<Map<Object, Object>> data = (List<Map<Object, Object>>) s.getData();
                     Map<String, String> mapper = s.getMapper();
                     if (mapper == null || mapper.isEmpty()) {
                         mapper = data.get(0).keySet().stream().collect(Collectors.toMap(Object::toString, Object::toString));
                     }
-                    writeSheetOfMap(sheet, data, mapper, s.getFillEmpty());
+                    ExcelUtils.writeSheetOfMap(sheet, data, mapper, s.getFillEmpty());
                 } else if (DataRow.class.isAssignableFrom(elementType)) {
                     List<DataRow> dataRows = (List<DataRow>) s.getData();
                     Map<String, String> mapper = s.getMapper();
                     if (mapper == null || mapper.isEmpty()) {
                         mapper = dataRows.get(0).getNames().stream().collect(Collectors.toMap(k -> k, v -> v));
                     }
-                    writeSheetOfDataRow(sheet, dataRows, mapper, s.getFillEmpty());
+                    ExcelUtils.writeSheetOfDataRow(sheet, dataRows, mapper, s.getFillEmpty());
                 } else {
-                    writeSheetOfJavaBean(sheet, s.getData(), s.getFillEmpty());
+                    ExcelUtils.writeSheetOfJavaBean(sheet, s.getData(), s.getFillEmpty());
                 }
             }
             workbook.write(out);
         } catch (IOException e) {
-            log.error("io ex:{}", e.getMessage());
+            ExcelUtils.log.error("io ex:{}", e.getMessage());
         } catch (NoSuchMethodException e) {
-            log.error("no such method:{}", e.getMessage());
+            ExcelUtils.log.error("no such method:{}", e.getMessage());
         } catch (InvocationTargetException e) {
-            log.error("this object invoke failed:{}", e.getMessage());
+            ExcelUtils.log.error("this object invoke failed:{}", e.getMessage());
         } catch (NoSuchFieldException e) {
-            log.error("no such field:{}", e.getMessage());
+            ExcelUtils.log.error("no such field:{}", e.getMessage());
         } catch (IllegalAccessException e) {
-            log.error("access failed:{}", e.getMessage());
+            ExcelUtils.log.error("access failed:{}", e.getMessage());
         }
         return out.toByteArray();
     }
