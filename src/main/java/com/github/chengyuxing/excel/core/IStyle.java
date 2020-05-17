@@ -1,9 +1,9 @@
 package com.github.chengyuxing.excel.core;
 
+import com.github.chengyuxing.common.tuple.Pair;
+import com.github.chengyuxing.common.tuple.Tuples;
 import org.apache.poi.xssf.model.StylesTable;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.rabbit.common.tuple.Pair;
-import org.rabbit.common.tuple.Tuples;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

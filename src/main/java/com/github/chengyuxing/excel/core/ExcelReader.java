@@ -1,12 +1,12 @@
 package com.github.chengyuxing.excel.core;
 
+import com.github.chengyuxing.common.types.DataRow;
 import com.github.chengyuxing.excel.utils.ExcelUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.rabbit.common.types.DataRow;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,7 +42,7 @@ public class ExcelReader {
      * @return list
      * @throws IOException e
      */
-    public List<SheetMetaData> getSheets() throws IOException, InvalidFormatException {
+    public List<SheetMetaData> getSheets() throws IOException {
         GenWorkbookIfNecessary();
         List<SheetMetaData> sheets = new ArrayList<>();
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
@@ -109,7 +109,7 @@ public class ExcelReader {
      * @return 行数据流
      * @throws IOException ex
      */
-    public <R> Stream<R> stream(Function<DataRow, R> convert) throws IOException, InvalidFormatException {
+    public <R> Stream<R> stream(Function<DataRow, R> convert) throws IOException {
         GenWorkbookIfNecessary();
         Stream.Builder<R> builder = Stream.builder();
         Sheet sheet = workbook.getSheetAt(sheetIndex);
@@ -161,7 +161,7 @@ public class ExcelReader {
      *
      * @throws IOException e
      */
-    private void GenWorkbookIfNecessary() throws IOException, InvalidFormatException {
+    private void GenWorkbookIfNecessary() throws IOException {
         if (workbook == null)
             workbook = WorkbookFactory.create(inputStream);
     }
