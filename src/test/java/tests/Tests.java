@@ -5,9 +5,9 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.xssf.model.StylesTable;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.junit.Test;
-import com.github.chengyuxing.excel.Excels;
-import com.github.chengyuxing.excel.core.ISheet;
-import com.github.chengyuxing.excel.core.IStyle;
+import rabbit.excel.Excels;
+import rabbit.excel.core.ISheet;
+import rabbit.excel.core.IStyle;
 
 import java.io.FileInputStream;
 import java.util.*;

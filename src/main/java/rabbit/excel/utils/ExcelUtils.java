@@ -1,8 +1,8 @@
-package com.github.chengyuxing.excel.utils;
+package rabbit.excel.utils;
 
-import com.github.chengyuxing.common.types.DataRow;
-import com.github.chengyuxing.common.utils.ReflectUtil;
-import com.github.chengyuxing.excel.core.Head;
+import rabbit.common.types.DataRow;
+import rabbit.common.utils.ReflectUtil;
+import rabbit.excel.core.Head;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

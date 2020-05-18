@@ -1,4 +1,4 @@
-package com.github.chengyuxing.excel.core;
+package rabbit.excel.core;
 
 import java.lang.annotation.*;
 
