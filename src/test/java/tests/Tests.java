@@ -52,19 +52,10 @@ public class Tests {
 
         ISheet firstSheet = ISheet.ofList("Sheet1", list1);
 
-//        firstSheet.setCellStyle(IStyle.create().headerStyle(style -> {
-//            style.setAlignment(HorizontalAlignment.CENTER);
-//            style.setFillBackgroundColor(IndexedColors.BLUE.index);
-//            XSSFFont font = new XSSFFont();
-//            font.setBold(true);
-//            style.setFont(font);
-//            return style;
-//        }));
-
-//        Excels.write("/Users/chengyuxing/test/excels_user",
-//                firstSheet,
-//                ISheet.ofJavaBean("Sheet10", users),
-//                ISheet.ofMap("Sheet3", list2, mapper));
+        Excels.write("/Users/chengyuxing/test/excels_user",
+                firstSheet,
+                ISheet.ofJavaBean("Sheet10", users),
+                ISheet.ofMap("Sheet3", list2, mapper));
 
         Excels.read(new FileInputStream("/Users/chengyuxing/test/excels_user.xlsx"))
                 .sheetAt(1, 0, 20)
