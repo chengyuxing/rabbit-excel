@@ -1,8 +1,6 @@
 package rabbit.excel.io;
 
 import org.apache.poi.ss.usermodel.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import rabbit.common.types.DataRow;
 import rabbit.common.utils.ReflectUtil;
 import rabbit.excel.types.Head;
@@ -158,15 +156,4 @@ public class ExcelWriter {
         }
         return fields;
     }
-
-    public static CellStyle createStyle(Sheet sheet) {
-        Workbook workbook = sheet.getWorkbook();
-        CellStyle style = workbook.createCellStyle();
-        Font font = workbook.createFont();
-        font.setBold(true);
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setFont(font);
-        return style;
-    }
-
 }

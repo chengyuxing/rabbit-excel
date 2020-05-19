@@ -7,9 +7,7 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.junit.Test;
 import rabbit.excel.Excels;
 import rabbit.excel.types.ISheet;
-import rabbit.excel.types.IStyle;
 
-import java.io.FileInputStream;
 import java.util.*;
 
 public class Tests {
@@ -75,8 +73,6 @@ public class Tests {
 
         source.setAlignment(HorizontalAlignment.CENTER);
         source.setFillBackgroundColor(IndexedColors.YELLOW.getIndex());
-
-        IStyle.bind(source, target);
 
         System.out.println(target.getAlignment());
         System.out.println(target.getFillBackgroundColor());
