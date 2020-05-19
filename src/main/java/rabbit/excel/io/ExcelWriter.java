@@ -17,6 +17,8 @@ import java.util.stream.Stream;
  * excel写入类
  */
 public class ExcelWriter {
+    private Workbook workbook;
+
     @SuppressWarnings("unchecked")
     public static void writeSheet(Sheet sheet, ISheet iSheet) throws NoSuchMethodException, NoSuchFieldException, IllegalAccessException, InvocationTargetException {
         Map<String, String> mapper = iSheet.getMapper();
