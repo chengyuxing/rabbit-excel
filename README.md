@@ -63,12 +63,12 @@ public void test1() throws Exception {
     new User("Jackson", "美国得克萨斯州", "美国")
   );
 
-  ISheet firstSheet = ISheet.ofList("Sheet1", list1);
+  ISheet firstSheet = ISheet.of("Sheet1", list1);
 
   Excels.write("/Users/chengyuxing/test/excels_user",
                firstSheet,
-               ISheet.ofJavaBean("Sheet10", users),
-               ISheet.ofMap("Sheet3", list2, mapper));
+               ISheet.of("Sheet10", users),
+               ISheet.of("Sheet3", list2, mapper));
 
   Excels.read(new FileInputStream("/Users/chengyuxing/test/excels_user.xlsx"))
     .sheetAt(1, 0, 20)

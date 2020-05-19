@@ -6,7 +6,7 @@
     <description>Excel文件处理工具</description>
     <groupId>com.github.chengyuxing</groupId>
     <artifactId>rabbit-excel</artifactId>
-    <version>1.7.410</version>
+    <version>1.8.410</version>
     <packaging>jar</packaging>
     <name>rabbit-excel</name>
     <url>https://github.com/chengyuxing/rabbit-excel</url>
