@@ -6,8 +6,8 @@ import org.apache.poi.xssf.model.StylesTable;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.junit.Test;
 import rabbit.excel.Excels;
-import rabbit.excel.core.ISheet;
-import rabbit.excel.core.IStyle;
+import rabbit.excel.types.ISheet;
+import rabbit.excel.types.IStyle;
 
 import java.io.FileInputStream;
 import java.util.*;
@@ -50,19 +50,22 @@ public class Tests {
                 new User("Jackson", "美国得克萨斯州", "美国")
         );
 
-        ISheet firstSheet = ISheet.ofList("Sheet1", list1);
+        Map<String, String> javaBeanMapper = new HashMap<>();
+        javaBeanMapper.put("name", "小名");
+        javaBeanMapper.put("address", "家庭地址");
+        javaBeanMapper.put("country", "所属国家");
 
         Excels.write("/Users/chengyuxing/test/excels_user",
-                firstSheet,
-                ISheet.ofJavaBean("Sheet10", users),
-                ISheet.ofMap("Sheet3", list2, mapper));
+                ISheet.of("SheetA", list1,javaBeanMapper),
+                ISheet.of("SheetB", users, javaBeanMapper),
+                ISheet.of("SheetC", list2, mapper));
 
-        Excels.read(new FileInputStream("/Users/chengyuxing/test/excels_user.xlsx"))
-                .sheetAt(1, 0, 20)
-                .where((i, r) -> i >= 0)
-                .where((i, r) -> !r.getString("姓名").equals("cyx"))
-                .stream(row -> row)
-                .forEach(System.out::println);
+//        Excels.read(new FileInputStream("/Users/chengyuxing/test/excels_user.xlsx"))
+//                .sheetAt(1, 0, 20)
+//                .where((i, r) -> i >= 0)
+//                .where((i, r) -> !r.getString("姓名").equals("cyx"))
+//                .stream(row -> row)
+//                .forEach(System.out::println);
     }
 
     @Test

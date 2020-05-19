@@ -1,11 +1,8 @@
-package rabbit.excel.core;
+package rabbit.excel.io;
 
+import org.apache.poi.ss.usermodel.*;
 import rabbit.common.types.DataRow;
-import rabbit.excel.utils.ExcelUtils;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import rabbit.excel.types.SheetMetaData;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -119,7 +116,7 @@ public class ExcelReader {
 
             for (int x = 0; x < header.length; x++) {
                 if (headerRow.getCell(x) != null) {
-                    header[x] = ExcelUtils.getValue(headerRow.getCell(x)).toString().toLowerCase();
+                    header[x] = getValue(headerRow.getCell(x)).toString().toLowerCase();
                 }
             }
             if (count < 1 || count > rowCount) {
@@ -132,7 +129,7 @@ public class ExcelReader {
                     String[] types = new String[header.length];
                     for (int x = 0, y = header.length; x < y; x++) {
                         if (row.getCell(x) != null) {
-                            value[x] = ExcelUtils.getValue(row.getCell(x));
+                            value[x] = getValue(row.getCell(x));
                             types[x] = value[x].getClass().getName();
                         } else {
                             value[x] = "";
@@ -163,6 +160,24 @@ public class ExcelReader {
     private void GenWorkbookIfNecessary() throws IOException {
         if (workbook == null)
             workbook = WorkbookFactory.create(inputStream);
+    }
+
+    public Object getValue(Cell cell) {
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case BOOLEAN:
+                return cell.getBooleanCellValue();
+            case NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    return cell.getDateCellValue();
+                }
+                return (long) cell.getNumericCellValue();
+            case FORMULA:
+                return cell.getCellFormula();
+            default:
+                return "";
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-package rabbit.excel.core;
+package rabbit.excel.types;
 
 import org.apache.poi.xssf.model.StylesTable;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;

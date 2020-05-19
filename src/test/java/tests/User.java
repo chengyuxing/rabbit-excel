@@ -1,6 +1,6 @@
 package tests;
 
-import rabbit.excel.core.Head;
+import rabbit.excel.types.Head;
 
 public class User {
     @Head("姓名")

@@ -1,4 +1,4 @@
-package rabbit.excel.core;
+package rabbit.excel.types;
 
 import java.lang.annotation.*;
 

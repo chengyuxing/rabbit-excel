@@ -1,4 +1,4 @@
-package rabbit.excel.core;
+package rabbit.excel.types;
 
 public class SheetMetaData {
     private int index;
@@ -11,7 +11,7 @@ public class SheetMetaData {
         this.size = size;
     }
 
-    static SheetMetaData of(int index, String name, int size) {
+    public static SheetMetaData of(int index, String name, int size) {
         return new SheetMetaData(index, name, size);
     }
 

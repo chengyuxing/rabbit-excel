@@ -1,22 +1,22 @@
 package rabbit.excel;
 
-import rabbit.common.types.DataRow;
-import rabbit.excel.core.ExcelReader;
-import rabbit.excel.core.ISheet;
-import rabbit.excel.utils.ExcelUtils;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import rabbit.excel.io.ExcelReader;
+import rabbit.excel.io.ExcelWriter;
+import rabbit.excel.types.ISheet;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Excel文件读写操作类
  */
 public final class Excels {
+    public final static Logger log = LoggerFactory.getLogger(Excels.class);
+
     /**
      * 读Excel
      *
@@ -55,7 +55,6 @@ public final class Excels {
      * @param more   更多Sheet
      * @return 字节流
      */
-    @SuppressWarnings("unchecked")
     public static byte[] write(ISheet iSheet, ISheet... more) {
         ISheet[] sheets = new ISheet[more.length + 1];
         sheets[0] = iSheet;
@@ -64,39 +63,19 @@ public final class Excels {
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
             for (ISheet s : sheets) {
                 Sheet sheet = workbook.createSheet(s.getName());
-                Class<?> elementType = s.getClazz();
-                if (List.class.isAssignableFrom(elementType)) {
-                    List<List<Object>> data = (List<List<Object>>) s.getData();
-                    ExcelUtils.writeSheetOfList(sheet, data, s.getFillEmpty());
-                } else if (Map.class.isAssignableFrom(elementType)) {
-                    List<Map<Object, Object>> data = (List<Map<Object, Object>>) s.getData();
-                    Map<String, String> mapper = s.getMapper();
-                    if (mapper == null || mapper.isEmpty()) {
-                        mapper = data.get(0).keySet().stream().collect(Collectors.toMap(Object::toString, Object::toString));
-                    }
-                    ExcelUtils.writeSheetOfMap(sheet, data, mapper, s.getFillEmpty());
-                } else if (DataRow.class.isAssignableFrom(elementType)) {
-                    List<DataRow> dataRows = (List<DataRow>) s.getData();
-                    Map<String, String> mapper = s.getMapper();
-                    if (mapper == null || mapper.isEmpty()) {
-                        mapper = dataRows.get(0).getNames().stream().collect(Collectors.toMap(k -> k, v -> v));
-                    }
-                    ExcelUtils.writeSheetOfDataRow(sheet, dataRows, mapper, s.getFillEmpty());
-                } else {
-                    ExcelUtils.writeSheetOfJavaBean(sheet, s.getData(), s.getFillEmpty());
-                }
+                ExcelWriter.writeSheet(sheet, s);
             }
             workbook.write(out);
         } catch (IOException e) {
-            ExcelUtils.log.error("io ex:{}", e.getMessage());
+            log.error("io ex:{}", e.getMessage());
         } catch (NoSuchMethodException e) {
-            ExcelUtils.log.error("no such method:{}", e.getMessage());
+            log.error("no such method:{}", e.getMessage());
         } catch (InvocationTargetException e) {
-            ExcelUtils.log.error("this object invoke failed:{}", e.getMessage());
+            log.error("this object invoke failed:{}", e.getMessage());
         } catch (NoSuchFieldException e) {
-            ExcelUtils.log.error("no such field:{}", e.getMessage());
+            log.error("no such field:{}", e.getMessage());
         } catch (IllegalAccessException e) {
-            ExcelUtils.log.error("access failed:{}", e.getMessage());
+            log.error("access failed:{}", e.getMessage());
         }
         return out.toByteArray();
     }
