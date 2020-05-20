@@ -1,6 +1,5 @@
 package rabbit.excel.types;
 
-
 import rabbit.common.types.DataRow;
 import rabbit.excel.styles.IStyle;
 
@@ -11,6 +10,7 @@ import java.util.function.BiFunction;
 
 /**
  * Excel Sheet数据类
+ *
  * @param <T> 行数据类型参数
  * @param <U> 行数据索引类型（java bean：String，DataRow：String，Map：String，List：Integer）
  */
@@ -21,6 +21,7 @@ public class ISheet<T, U> {
     private Class<T> clazz;
     private String emptyColumn = "";
     private BiFunction<T, U, IStyle> cellStyle;
+    private IStyle headerStyle;
 
     ISheet() {
     }
@@ -29,10 +30,13 @@ public class ISheet<T, U> {
      * 创建一个sheet
      *
      * @param name   名称
-     * @param data   数据类型参数支持：List&lt;Object&gt;; DataRow; Map&lt;String,Object&gt;; 标准Java Bean
+     * @param data   数据
      * @param mapper 表头字段名称映射(字段名，列名)
+     * @param <T>    行数据类型参数：List&lt;Object&gt;; DataRow; Map&lt;String,Object&gt;; 标准Java Bean(需指定注解Head，用于java bean的字段名映射)
+     * @param <U>    索引类型参数，除行数据类型List&lt;Object&gt;索引为Integer类型(单元格序号)以外，其他都为String类型(字段名)
      * @return sheet
      * @see DataRow
+     * @see Head
      */
     @SuppressWarnings("unchecked")
     public static <T, U> ISheet<T, U> of(String name, List<T> data, Map<String, String> mapper) {
@@ -48,19 +52,48 @@ public class ISheet<T, U> {
      * 创建一个sheet
      *
      * @param name 名称
-     * @param data 数据类型参数支持：List&lt;Object&gt;; DataRow; Map&lt;String,Object&gt;; 标准Java Bean
+     * @param data 数据
+     * @param <T>  行数据类型参数：List&lt;Object&gt;; DataRow; Map&lt;String,Object&gt;; 标准Java Bean(需指定注解Head，用于java bean的字段名映射)
+     * @param <U>  索引类型参数，除行数据类型List&lt;Object&gt;索引为Integer类型(单元格序号)以外，其他都为String类型(字段名)
      * @return sheet
      * @see DataRow
+     * @see Head
      */
     public static <T, U> ISheet<T, U> of(String name, List<T> data) {
         return of(name, data, Collections.emptyMap());
     }
 
+    /**
+     * 获取表头样式
+     *
+     * @return 表头样式
+     */
+    public IStyle getHeaderStyle() {
+        return headerStyle;
+    }
+
+    /**
+     * 设置表头样式
+     *
+     * @param headerStyle 表头样式
+     */
+    public void setHeaderStyle(IStyle headerStyle) {
+        this.headerStyle = headerStyle;
+    }
+
+    /**
+     * 获取表体单元格样式函数
+     *
+     * @return 表体单元格样式函数
+     */
     public BiFunction<T, U, IStyle> getCellStyle() {
         return cellStyle;
     }
 
-    public void setCellStyleCall(BiFunction<T, U, IStyle> cellStyle) {
+    /**
+     * 设置表体单元格样式函数
+     */
+    public void setCellStyle(BiFunction<T, U, IStyle> cellStyle) {
         this.cellStyle = cellStyle;
     }
 
@@ -72,11 +105,11 @@ public class ISheet<T, U> {
         return data;
     }
 
-    public void setData(List<T> data) {
+    void setData(List<T> data) {
         this.data = data;
     }
 
-    public void setClazz(Class<T> clazz) {
+    void setClazz(Class<T> clazz) {
         this.clazz = clazz;
     }
 
@@ -84,7 +117,7 @@ public class ISheet<T, U> {
         return name;
     }
 
-    public void setName(String name) {
+    void setName(String name) {
         this.name = name;
     }
 
@@ -92,7 +125,7 @@ public class ISheet<T, U> {
         return mapper;
     }
 
-    public void setMapper(Map<String, String> mapper) {
+    void setMapper(Map<String, String> mapper) {
         this.mapper = mapper;
     }
 

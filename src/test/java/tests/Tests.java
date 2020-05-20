@@ -112,7 +112,7 @@ public class Tests {
         Success success = new Success(writer.createCellStyle());
 
         ISheet<Map<String, Object>, String> sheet = ISheet.of("sheet1", list2);
-        sheet.setCellStyleCall((row, field) -> {
+        sheet.setCellStyle((row, field) -> {
             if ((int) row.get("age") % 2 != 0 && field.equals("age"))
                 return danger;
             if (row.get("address").equals("kunming"))
@@ -121,7 +121,7 @@ public class Tests {
         });
 
         ISheet<List<Object>, Integer> sheet1 = ISheet.of("sheet2", list1);
-        sheet1.setCellStyleCall((row, index) -> {
+        sheet1.setCellStyle((row, index) -> {
             if (index == 2 && row.get(index).equals("c")) {
                 return danger;
             }
@@ -129,7 +129,7 @@ public class Tests {
         });
 
         ISheet<User, String> userSheet = ISheet.of("users", users);
-        userSheet.setCellStyleCall((u, field) -> {
+        userSheet.setCellStyle((u, field) -> {
             if (field.equals("name") && u.getName().equals("cyx")) {
                 return danger;
             }
