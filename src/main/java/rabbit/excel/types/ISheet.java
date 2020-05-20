@@ -2,20 +2,25 @@ package rabbit.excel.types;
 
 
 import rabbit.common.types.DataRow;
+import rabbit.excel.styles.IStyle;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 /**
- * Excel Sheet类
+ * Excel Sheet数据类
+ * @param <T> 行数据类型参数
+ * @param <U> 行数据索引类型（java bean：String，DataRow：String，Map：String，List：Integer）
  */
-public class ISheet {
+public class ISheet<T, U> {
     private String name;
     private Map<String, String> mapper;
-    private List<?> data;
-    private Class<?> clazz;
+    private List<T> data;
+    private Class<T> clazz;
     private String emptyColumn = "";
+    private BiFunction<T, U, IStyle> cellStyle;
 
     ISheet() {
     }
@@ -29,11 +34,12 @@ public class ISheet {
      * @return sheet
      * @see DataRow
      */
-    public static ISheet of(String name, List<?> data, Map<String, String> mapper) {
-        ISheet sheet = new ISheet();
+    @SuppressWarnings("unchecked")
+    public static <T, U> ISheet<T, U> of(String name, List<T> data, Map<String, String> mapper) {
+        ISheet<T, U> sheet = new ISheet<>();
         sheet.setName(name);
         sheet.setData(data);
-        sheet.setClazz(data.get(0).getClass());
+        sheet.setClazz((Class<T>) data.get(0).getClass());
         sheet.setMapper(mapper);
         return sheet;
     }
@@ -46,23 +52,31 @@ public class ISheet {
      * @return sheet
      * @see DataRow
      */
-    public static ISheet of(String name, List<?> data) {
+    public static <T, U> ISheet<T, U> of(String name, List<T> data) {
         return of(name, data, Collections.emptyMap());
     }
 
-    public Class<?> getClazz() {
+    public BiFunction<T, U, IStyle> getCellStyle() {
+        return cellStyle;
+    }
+
+    public void setCellStyleCall(BiFunction<T, U, IStyle> cellStyle) {
+        this.cellStyle = cellStyle;
+    }
+
+    public Class<T> getClazz() {
         return clazz;
     }
 
-    public List<?> getData() {
+    public List<T> getData() {
         return data;
     }
 
-    public void setData(List<?> data) {
+    public void setData(List<T> data) {
         this.data = data;
     }
 
-    public void setClazz(Class<?> clazz) {
+    public void setClazz(Class<T> clazz) {
         this.clazz = clazz;
     }
 

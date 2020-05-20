@@ -1,9 +1,9 @@
 package rabbit.excel.types;
 
 public class SheetMetaData {
-    private int index;
-    private String name;
-    private int size;
+    private final int index;
+    private final String name;
+    private final int size;
 
     private SheetMetaData(int index, String name, int size) {
         this.index = index;

@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 /**
  * Excel读取类
  */
-public class ExcelReader {
+public class ExcelReader implements AutoCloseable {
     private final InputStream inputStream;
     private final List<BiPredicate<Integer, DataRow>> filters = new ArrayList<>();
     private Workbook workbook;
@@ -178,6 +178,12 @@ public class ExcelReader {
             default:
                 return "";
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        workbook.close();
+        filters.clear();
     }
 }
 

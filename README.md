@@ -2,80 +2,98 @@
 - 所有方法通过Excels静态类调用
 ## Example
 
+### 准备数据
+
 ```java
-@Test
-public void test1() throws IOException, InvalidFormatException {
-  List<Map<String, Object>> list = new ArrayList<>();
-  for (int i = 0; i < 10; i++) {
-    Map<String, Object> map = new HashMap<>();
-    map.put("name", "chengyuxing");
-    map.put("age", i);
-    map.put("address", "昆明市西山区");
-    map.put("enable", i % 2 == 0);
-    list.add(map);
-  }
+List<Map<String, Object>> list2 = new ArrayList<>();
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("name", "chengyuxing");
+        map.put("age", 21);
+        map.put("address", "kunming");
 
-  Excels.write("/Users/chengyuxing/test/me", ISheet.ofMap("oSheet", list));
+        Map<String, Object> map1 = new LinkedHashMap<>();
+        map1.put("name", "chengyuxing3");
+        map1.put("age", 29);
+        map1.put("address", "kunming");
 
-  Excels.read("/Users/chengyuxing/test/me.xlsx")
-    .sheetAt(0)
-    .where((idx, row) -> row.get("enable").equals("true"))
-    .where((idx, row) -> row.getInt("age") > 4)
-    .stream(DataRow::toMap)
-    .forEach(System.out::println);
-}
+        Map<String, Object> map2 = new LinkedHashMap<>();
+        map2.put("name", "chengyuxing2");
+        map2.put("age", 22);
+        map2.put("address", "kunming");
+
+        list2.add(map);
+        list2.add(map2);
+        list2.add(map1);
+
+
+        List<List<Object>> list1 = Arrays.asList(
+                Arrays.asList("a", "b", "c", "d"),
+                Arrays.asList("e", "f", "g", "h", "i")
+        );
+
+        List<User> users = Arrays.asList(
+                new User("cyx", "昆明", "中国"),
+                new User("Jackson", "美国得克萨斯州", "美国")
+        );
 ```
 
+### 导出excel文件（默认）
+
 ```java
-@Test
-public void test1() throws Exception {
-  List<List<Object>> list1 = Arrays.asList(
-    Arrays.asList("a", "b", "c", "d"),
-    Arrays.asList("e", "f", "g", "h", "i")
-  );
-  List<Map<String, Object>> list2 = new ArrayList<>();
-  Map<String, Object> map = new HashMap<>();
-  map.put("name", "chengyuxing");
-  map.put("age", 21);
-  map.put("address", "kunming");
+Excels.writer().write(ISheet.of("SheetA", list1, javaBeanMapper),
+                ISheet.of("SheetB", users, javaBeanMapper),
+                ISheet.of("SheetC", list2, mapper))
+                .saveTo("/Users/chengyuxing/test/excels_user000000");
+```
 
-  Map<String, Object> map1 = new HashMap<>();
-  map1.put("name", "chengyuxing3");
-  map1.put("age", 29);
-  map1.put("address", "kunming");
+### 导出excel文件（自定义单元格样式）
 
-  Map<String, Object> map2 = new HashMap<>();
-  map2.put("name", "chengyuxing2");
-  map2.put("age", 22);
-  map2.put("address", "kunming");
+ Sheet.setCellStyle需要传入一个函数，参数1位当前行，参数2位单前列的索引类型（java bean：String，DataRow：String，Map：String，List：Integer），然后根据相应的逻辑返回一个样式。
 
-  list2.add(map);
-  list2.add(map2);
-  list2.add(map1);
+```java
+ExcelWriter writer = Excels.writer();
 
-  Map<String, String> mapper = new HashMap<>();
-  mapper.put("name", "姓名");
-  mapper.put("age", "年龄");
-  mapper.put("address", "地址");
+        Danger danger = new Danger(writer.createCellStyle());
+        Success success = new Success(writer.createCellStyle());
 
-  List<User> users = Arrays.asList(
-    new User("cyx", "昆明", "中国"),
-    new User("Jackson", "美国得克萨斯州", "美国")
-  );
+        ISheet<Map<String, Object>, String> sheet = ISheet.of("sheet1", list2);
+        sheet.setCellStyle((row, field) -> {
+            if ((int) row.get("age") % 2 != 0 && field.equals("age"))
+                return danger;
+            if (row.get("address").equals("kunming"))
+                return success;
+            return null;
+        });
 
-  ISheet firstSheet = ISheet.of("Sheet1", list1);
+        ISheet<List<Object>, Integer> sheet1 = ISheet.of("sheet2", list1);
+        sheet1.setCellStyle((row, index) -> {
+            if (index == 2 && row.get(index).equals("c")) {
+                return danger;
+            }
+            return null;
+        });
 
-  Excels.write("/Users/chengyuxing/test/excels_user",
-               firstSheet,
-               ISheet.of("Sheet10", users),
-               ISheet.of("Sheet3", list2, mapper));
+        ISheet<User, String> userSheet = ISheet.of("users", users);
+        userSheet.setCellStyle((u, field) -> {
+            if (field.equals("name") && u.getName().equals("cyx")) {
+                return danger;
+            }
+            return null;
+        });
 
-  Excels.read(new FileInputStream("/Users/chengyuxing/test/excels_user.xlsx"))
-    .sheetAt(1, 0, 20)
-    .where((i, r) -> i >= 0)
-    .where((i, r) -> !r.getString("姓名").equals("cyx"))
-    .stream(row -> row)
-    .forEach(System.out::println);
-}
+        writer.write(sheet, sheet1, userSheet)
+                .saveTo("/Users/chengyuxing/test/writer.xlsx");
+
+```
+
+### 读取Excel文件
+
+```java
+Excels.read(new FileInputStream("/Users/chengyuxing/test/excels_user000000.xlsx"))
+                .sheetAt(1, 0, 20)
+                .where((i, r) -> i >= 0)
+                .where((i, r) -> !r.getString("姓名").equals("cyx"))
+                .stream(row -> row)
+                .forEach(System.out::println);
 ```
 
