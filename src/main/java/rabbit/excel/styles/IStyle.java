@@ -1,6 +1,7 @@
 package rabbit.excel.styles;
 
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
 import rabbit.excel.styles.props.Background;
 import rabbit.excel.styles.props.Border;
 import rabbit.excel.styles.props.Foreground;
@@ -39,6 +40,10 @@ public abstract class IStyle {
             style.setFillForegroundColor(foreground.getColor().getIndex());
             style.setFillPattern(foreground.getFill());
         }
+        Font font = font();
+        if (font != null) {
+            style.setFont(font);
+        }
     }
 
     public abstract Border border();
@@ -46,4 +51,6 @@ public abstract class IStyle {
     public abstract Background background();
 
     public abstract Foreground foreground();
+
+    public abstract Font font();
 }

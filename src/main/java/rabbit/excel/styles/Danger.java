@@ -2,6 +2,7 @@ package rabbit.excel.styles;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import rabbit.excel.styles.props.Background;
 import rabbit.excel.styles.props.Border;
@@ -25,6 +26,11 @@ public class Danger extends IStyle {
 
     @Override
     public Foreground foreground() {
+        return null;
+    }
+
+    @Override
+    public Font font() {
         return null;
     }
 }
