@@ -5,9 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rabbit.common.types.DataRow;
 import rabbit.common.utils.ReflectUtil;
-import rabbit.excel.styles.IStyle;
-import rabbit.excel.types.Head;
-import rabbit.excel.types.ISheet;
+import rabbit.excel.style.IStyle;
+import rabbit.excel.type.Head;
+import rabbit.excel.type.ISheet;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;

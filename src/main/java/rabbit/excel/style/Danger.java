@@ -1,12 +1,12 @@
-package rabbit.excel.styles;
+package rabbit.excel.style;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
-import rabbit.excel.styles.props.Background;
-import rabbit.excel.styles.props.Border;
-import rabbit.excel.styles.props.Foreground;
+import rabbit.excel.style.props.Background;
+import rabbit.excel.style.props.Border;
+import rabbit.excel.style.props.Foreground;
 
 public class Danger extends IStyle {
 

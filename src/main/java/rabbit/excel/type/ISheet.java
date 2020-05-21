@@ -1,7 +1,7 @@
-package rabbit.excel.types;
+package rabbit.excel.type;
 
 import rabbit.common.types.DataRow;
-import rabbit.excel.styles.IStyle;
+import rabbit.excel.style.IStyle;
 
 import java.util.Collections;
 import java.util.List;

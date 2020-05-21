@@ -1,10 +1,10 @@
-package rabbit.excel.styles;
+package rabbit.excel.style;
 
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
-import rabbit.excel.styles.props.Background;
-import rabbit.excel.styles.props.Border;
-import rabbit.excel.styles.props.Foreground;
+import rabbit.excel.style.props.Background;
+import rabbit.excel.style.props.Border;
+import rabbit.excel.style.props.Foreground;
 
 public abstract class IStyle {
     private final CellStyle style;

@@ -1,17 +1,11 @@
 package tests;
 
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.model.StylesTable;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
 import rabbit.excel.Excels;
 import rabbit.excel.io.ExcelWriter;
-import rabbit.excel.styles.Danger;
-import rabbit.excel.styles.Success;
-import rabbit.excel.types.ISheet;
+import rabbit.excel.style.Danger;
+import rabbit.excel.style.Success;
+import rabbit.excel.type.ISheet;
 
 import java.io.FileInputStream;
 import java.time.LocalDateTime;

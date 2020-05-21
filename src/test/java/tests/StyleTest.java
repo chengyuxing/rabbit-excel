@@ -3,8 +3,8 @@ package tests;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
-import rabbit.excel.styles.Danger;
-import rabbit.excel.styles.Warning;
+import rabbit.excel.style.Danger;
+import rabbit.excel.style.Warning;
 
 import java.io.FileOutputStream;
 
@@ -12,7 +12,7 @@ public class StyleTest {
     @Test
     public void testStyle() throws Exception {
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("styles");
+        Sheet sheet = workbook.createSheet("style");
 
         Row row = sheet.createRow(0);
         Cell cell = row.createCell(0);
