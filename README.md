@@ -89,13 +89,50 @@ ExcelWriter writer = Excels.writer();
 ### 读取Excel文件
 
 ```java
-Excels.read(new FileInputStream("/Users/chengyuxing/test/excels_user000000.xlsx"))
+Excels.reader(new FileInputStream("/Users/chengyuxing/test/excels_user000000.xlsx"))
                 .sheetAt(1, 0, 20)
                 .where((i, r) -> i >= 0)
                 .where((i, r) -> !r.getString("姓名").equals("cyx"))
                 .stream(row -> row)
                 .forEach(System.out::println);
 ```
+
+### Test
+
+```java
+@Test
+public void CloseTest() throws Exception {
+  List<Map<String, Object>> list = new ArrayList<>();
+  for (int i = 0; i < 10000; i++) {
+    Map<String, Object> row = new HashMap<>();
+    row.put("a", "chengyuxing");
+    row.put("b", i);
+    row.put("c", Math.random() * 1000);
+    row.put("d", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+    row.put("e", "昆明市");
+    row.put("f", i % 3 == 0 ? "" : "ok");
+    list.add(row);
+  }
+
+  ExcelWriter writer = Excels.writer();
+
+  Danger danger = new Danger(writer.createCellStyle());
+
+  ISheet<Map<String, Object>, String> iSheet = ISheet.of("sheet100", list);
+  iSheet.setEmptyColumn("--");    //填充空单元格
+  iSheet.setCellStyle((row, key) -> {
+    //c字段大于700则添加红框
+    if (key.equals("c") && (double) row.get("c") > 700) {
+      return danger;
+    }
+    return null;
+  });
+
+  writer.write(iSheet).saveTo("/Users/chengyuxing/test/styleExcel");
+}
+```
+
+
 
 ### 计划
 1. 可自定义表格主体样式✅

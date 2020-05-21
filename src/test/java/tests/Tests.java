@@ -14,6 +14,8 @@ import rabbit.excel.styles.Success;
 import rabbit.excel.types.ISheet;
 
 import java.io.FileInputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Tests {
@@ -142,10 +144,33 @@ public class Tests {
     }
 
     @Test
-    public void CloseTest() throws Exception{
-        Workbook workbook = new XSSFWorkbook();
-        workbook.createSheet(",,");
-        workbook.close();
-        workbook.close();
+    public void CloseTest() throws Exception {
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (int i = 0; i < 10000; i++) {
+            Map<String, Object> row = new HashMap<>();
+            row.put("a", "chengyuxing");
+            row.put("b", i);
+            row.put("c", Math.random() * 1000);
+            row.put("d", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            row.put("e", "昆明市");
+            row.put("f", i % 3 == 0 ? "" : "ok");
+            list.add(row);
+        }
+
+        ExcelWriter writer = Excels.writer();
+
+        Danger danger = new Danger(writer.createCellStyle());
+
+        ISheet<Map<String, Object>, String> iSheet = ISheet.of("sheet100", list);
+        iSheet.setEmptyColumn("--");    //填充空单元格
+        iSheet.setCellStyle((row, key) -> {
+            //c字段大于700则添加红框
+            if (key.equals("c") && (double) row.get("c") > 700) {
+                return danger;
+            }
+            return null;
+        });
+
+        writer.write(iSheet).saveTo("/Users/chengyuxing/test/styleExcel");
     }
 }
