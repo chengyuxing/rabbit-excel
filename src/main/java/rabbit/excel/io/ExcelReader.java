@@ -2,7 +2,7 @@ package rabbit.excel.io;
 
 import org.apache.poi.ss.usermodel.*;
 import rabbit.common.types.DataRow;
-import rabbit.excel.types.SheetMetaData;
+import rabbit.excel.type.SheetMetaData;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -6,7 +6,7 @@ import org.apache.poi.xssf.model.StylesTable;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.junit.Test;
 import rabbit.excel.Excels;
-import rabbit.excel.types.ISheet;
+import rabbit.excel.type.ISheet;
 
 import java.util.*;
 

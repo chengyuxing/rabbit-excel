@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rabbit.excel.io.ExcelReader;
 import rabbit.excel.io.ExcelWriter;
-import rabbit.excel.types.ISheet;
+import rabbit.excel.type.ISheet;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;

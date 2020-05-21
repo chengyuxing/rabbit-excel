@@ -1,4 +1,4 @@
-package rabbit.excel.types;
+package rabbit.excel.type;
 
 
 import rabbit.common.types.DataRow;

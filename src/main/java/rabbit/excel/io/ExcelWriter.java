@@ -3,8 +3,8 @@ package rabbit.excel.io;
 import org.apache.poi.ss.usermodel.*;
 import rabbit.common.types.DataRow;
 import rabbit.common.utils.ReflectUtil;
-import rabbit.excel.types.Head;
-import rabbit.excel.types.ISheet;
+import rabbit.excel.type.Head;
+import rabbit.excel.type.ISheet;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
