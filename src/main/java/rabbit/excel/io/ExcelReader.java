@@ -7,6 +7,7 @@ import rabbit.excel.type.SheetMetaData;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -48,7 +49,7 @@ public class ExcelReader {
                 sheets.add(SheetMetaData.of(i, sheetName, sheet.getPhysicalNumberOfRows()));
             }
         }
-        return sheets;
+        return Collections.unmodifiableList(sheets);
     }
 
     /**
