@@ -1,5 +1,6 @@
 package tests;
 
+import com.healthmarketscience.jackcess.*;
 import org.junit.Test;
 import rabbit.excel.Excels;
 import rabbit.excel.io.ExcelWriter;
@@ -7,12 +8,42 @@ import rabbit.excel.style.Danger;
 import rabbit.excel.style.Success;
 import rabbit.excel.type.ISheet;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Tests {
+
+    @Test
+    public void AccessTest() throws IOException {
+        Database db = DatabaseBuilder.open(new File("/Users/chengyuxing/test/my.mdb"));
+        Table table = db.getTable("user");
+        List<String> fields = table.getColumns().stream().map(Column::getName).collect(Collectors.toList());
+        Row row;
+        while ((row = table.getNextRow()) != null) {
+            for (String field : fields) {
+                System.out.print(row.get(field) + ",");
+            }
+            System.out.println();
+        }
+    }
+
+    @Test
+    public void createAccessTable() throws Exception {
+        Database db = DatabaseBuilder.create(Database.FileFormat.V2016, new File("/Users/chengyuxing/test/my.mdb"));
+        Table table = new TableBuilder("user")
+                .addColumn(new ColumnBuilder("id").setType(DataType.LONG).setAutoNumber(true))
+                .addColumn(new ColumnBuilder("name").setType(DataType.TEXT))
+                .addColumn(new ColumnBuilder("address").setType(DataType.TEXT))
+                .toTable(db);
+        for (int i = 0; i < 100; i++) {
+            table.addRow(Column.AUTO_NUMBER, "cyx" + i, "云南省昆明市");
+        }
+    }
 
     @Test
     public void test1() throws Exception {
@@ -60,7 +91,7 @@ public class Tests {
                 ISheet.of("SheetC", list2, mapper))
                 .saveTo("/Users/chengyuxing/test/excels_user000000");
 
-        Excels.read(new FileInputStream("/Users/chengyuxing/test/excels_user000000.xlsx"))
+        Excels.reader(new FileInputStream("/Users/chengyuxing/test/excels_user000000.xlsx"))
                 .sheetAt(1, 0, 20)
                 .where((i, r) -> i >= 0)
                 .where((i, r) -> !r.getString("姓名").equals("cyx"))
