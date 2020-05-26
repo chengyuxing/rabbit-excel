@@ -272,7 +272,6 @@ public class ExcelWriter implements AutoCloseable {
             if (style != null)
                 cell.setCellStyle(style.getStyle());
         }
-        autoColumnWidth(sheet, fields);
     }
 
     private static <T> Map<String, String> getMapper(Class<T> clazz) {
