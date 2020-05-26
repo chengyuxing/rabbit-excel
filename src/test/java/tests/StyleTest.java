@@ -3,8 +3,8 @@ package tests;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
-import rabbit.excel.style.Danger;
-import rabbit.excel.style.Warning;
+import rabbit.excel.style.impl.Danger;
+import rabbit.excel.style.impl.Warning;
 
 import java.io.FileOutputStream;
 

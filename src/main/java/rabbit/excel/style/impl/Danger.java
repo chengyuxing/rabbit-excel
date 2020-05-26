@@ -1,9 +1,10 @@
-package rabbit.excel.style;
+package rabbit.excel.style.impl;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import rabbit.excel.style.IStyle;
 import rabbit.excel.style.props.Background;
 import rabbit.excel.style.props.Border;
 import rabbit.excel.style.props.Foreground;

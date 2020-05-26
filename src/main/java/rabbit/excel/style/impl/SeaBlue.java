@@ -1,15 +1,16 @@
-package rabbit.excel.style;
+package rabbit.excel.style.impl;
 
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import rabbit.excel.style.IStyle;
 import rabbit.excel.style.props.Background;
 import rabbit.excel.style.props.Border;
 import rabbit.excel.style.props.Foreground;
 
-public class SkyBlue extends IStyle {
-    public SkyBlue(CellStyle style) {
+public class SeaBlue extends IStyle {
+    public SeaBlue(CellStyle style) {
         super(style);
     }
 
@@ -25,7 +26,7 @@ public class SkyBlue extends IStyle {
 
     @Override
     public Foreground foreground() {
-        return new Foreground(IndexedColors.SKY_BLUE, FillPatternType.SOLID_FOREGROUND);
+        return new Foreground(IndexedColors.SEA_GREEN, FillPatternType.SOLID_FOREGROUND);
     }
 
     @Override

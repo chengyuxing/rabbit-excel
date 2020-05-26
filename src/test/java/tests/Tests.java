@@ -4,9 +4,9 @@ import com.healthmarketscience.jackcess.*;
 import org.junit.Test;
 import rabbit.excel.Excels;
 import rabbit.excel.io.ExcelWriter;
-import rabbit.excel.style.Danger;
-import rabbit.excel.style.SkyBlue;
-import rabbit.excel.style.Success;
+import rabbit.excel.style.impl.Danger;
+import rabbit.excel.style.impl.SeaBlue;
+import rabbit.excel.style.impl.Success;
 import rabbit.excel.type.ISheet;
 
 import java.io.File;
@@ -149,7 +149,7 @@ public class Tests {
         });
 
         ISheet<List<Object>, Integer> sheet1 = ISheet.of("sheet2", list1);
-        sheet1.setHeaderStyle(new SkyBlue(writer.createCellStyle()));
+        sheet1.setHeaderStyle(new SeaBlue(writer.createCellStyle()));
         sheet1.setCellStyle((row, index) -> {
             if (index == 2 && row.get(index).equals("c")) {
                 return danger;
@@ -187,11 +187,11 @@ public class Tests {
         ExcelWriter writer = Excels.writer();
 
         Danger danger = new Danger(writer.createCellStyle());
-        SkyBlue skyBlue = new SkyBlue(writer.createCellStyle());
+        SeaBlue seaBlue = new SeaBlue(writer.createCellStyle());
 
         ISheet<Map<String, Object>, String> iSheet = ISheet.of("sheet100", list);
         iSheet.setEmptyColumn("--");    //填充空单元格
-        iSheet.setHeaderStyle(skyBlue);
+        iSheet.setHeaderStyle(seaBlue);
         iSheet.setCellStyle((row, key) -> {
             //c字段大于700则添加红框
             if (key.equals("c") && (double) row.get("c") > 700) {
