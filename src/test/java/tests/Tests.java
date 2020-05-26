@@ -6,8 +6,11 @@ import org.apache.poi.xssf.model.StylesTable;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.junit.Test;
 import rabbit.excel.Excels;
+import rabbit.excel.io.ExcelWriter;
 import rabbit.excel.type.ISheet;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Tests {
@@ -54,7 +57,7 @@ public class Tests {
         javaBeanMapper.put("country", "所属国家");
 
         Excels.write("/Users/chengyuxing/test/excels_user",
-                ISheet.of("SheetA", list1,javaBeanMapper),
+                ISheet.of("SheetA", list1, javaBeanMapper),
                 ISheet.of("SheetB", users, javaBeanMapper),
                 ISheet.of("SheetC", list2, mapper));
 
@@ -76,5 +79,25 @@ public class Tests {
 
         System.out.println(target.getAlignment());
         System.out.println(target.getFillBackgroundColor());
+    }
+
+    @Test
+    public void testWrite() throws Exception {
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (int i = 0; i < 10000; i++) {
+            Map<String, Object> row = new HashMap<>();
+            row.put("a", "chengyuxing");
+            row.put("b", i);
+            row.put("c", Math.random() * 1000);
+            row.put("d", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            row.put("e", "昆明市");
+            row.put("f", i % 3 == 0 ? "" : "ok");
+            list.add(row);
+        }
+
+        ISheet iSheet = ISheet.of("sheet100", list);
+        iSheet.setEmptyColumn("--");    //填充空单元格
+
+        Excels.write("/Users/chengyuxing/test/styleExcel2", iSheet);
     }
 }
