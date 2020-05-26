@@ -2,6 +2,7 @@ package tests;
 
 import com.healthmarketscience.jackcess.*;
 import org.junit.Test;
+import rabbit.common.types.DataRow;
 import rabbit.excel.Excels;
 import rabbit.excel.io.ExcelWriter;
 import rabbit.excel.style.impl.Danger;
@@ -12,6 +13,7 @@ import rabbit.excel.type.ISheet;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -171,7 +173,7 @@ public class Tests {
     }
 
     @Test
-    public void CloseTest() throws Exception {
+    public void writeTest() throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         for (int i = 0; i < 10000; i++) {
             Map<String, Object> row = new HashMap<>();
@@ -201,5 +203,12 @@ public class Tests {
         });
 
         writer.write(iSheet).saveTo("/Users/chengyuxing/test/styleExcel");
+    }
+
+    @Test
+    public void readTest() throws Exception {
+        Excels.reader(Paths.get("/Users/chengyuxing/test/styleExcel.xlsx"))
+                .stream(r->r)
+                .forEach(System.out::println);
     }
 }
