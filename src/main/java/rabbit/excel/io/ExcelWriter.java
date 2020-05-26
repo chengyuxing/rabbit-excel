@@ -26,6 +26,7 @@ public class ExcelWriter implements AutoCloseable {
 
     /**
      * Excel读取类构造函数
+     *
      * @param workbook 工作薄
      */
     public ExcelWriter(Workbook workbook) {
@@ -34,6 +35,7 @@ public class ExcelWriter implements AutoCloseable {
 
     /**
      * 创建一个新的空白单元格样式
+     *
      * @return 空白单元格样式
      * @see IStyle
      */
@@ -43,6 +45,7 @@ public class ExcelWriter implements AutoCloseable {
 
     /**
      * 创建一个新的空白字形
+     *
      * @return 空白字形
      */
     public Font createFont() {
@@ -51,8 +54,9 @@ public class ExcelWriter implements AutoCloseable {
 
     /**
      * 写入sheet数据
+     *
      * @param iSheet sheet数据
-     * @param more 更多的sheet数据
+     * @param more   更多的sheet数据
      * @return Excel写入类
      */
     public ExcelWriter write(ISheet<?, ?> iSheet, ISheet<?, ?>... more) {
@@ -63,6 +67,7 @@ public class ExcelWriter implements AutoCloseable {
 
     /**
      * 写入sheet数据
+     *
      * @param iSheets 一组sheet数据
      * @return Excel写入类
      */
@@ -159,7 +164,7 @@ public class ExcelWriter implements AutoCloseable {
                 writeSheetOfJavaBean(sheet, (ISheet<?, String>) iSheet);
             }
         } else {
-            buildHeader(sheet, mapper);
+            buildHeader(sheet, mapper, iSheet.getHeaderStyle());
         }
     }
 
@@ -170,7 +175,7 @@ public class ExcelWriter implements AutoCloseable {
         if (mapper.isEmpty()) {
             mapper = data.get(0).keySet().stream().collect(Collectors.toMap(Object::toString, Object::toString));
         }
-        Object[] fields = buildHeader(sheet, mapper);
+        Object[] fields = buildHeader(sheet, mapper, iSheet.getHeaderStyle());
         for (int i = 0; i < data.size(); i++) {
             Row row = sheet.createRow(i + 1);
             for (int j = 0; j < fields.length; j++) {
@@ -190,7 +195,7 @@ public class ExcelWriter implements AutoCloseable {
         if (mapper.isEmpty()) {
             mapper = data.get(0).toMap(Object::toString);
         }
-        Object[] fields = buildHeader(sheet, mapper);
+        Object[] fields = buildHeader(sheet, mapper, iSheet.getHeaderStyle());
         for (int i = 0; i < data.size(); i++) {
             Row row = sheet.createRow(i + 1);
             for (int j = 0; j < fields.length; j++) {
@@ -206,13 +211,25 @@ public class ExcelWriter implements AutoCloseable {
     @SuppressWarnings("unchecked")
     private static <T> void writeSheetOfList(Sheet sheet, ISheet<T, Integer> iSheet) {
         List<List<Object>> data = (List<List<Object>>) iSheet.getData();
+        IStyle iStyle = iSheet.getHeaderStyle();
         for (int i = 0; i < data.size(); i++) {
             Row row = sheet.createRow(i);
-            for (int j = 0; j < data.get(0).size(); j++) {
-                Cell cell = row.createCell(j);
-                Object value = data.get(i).get(j);
-                setCellValue(cell, value, iSheet.getEmptyColumn());
-                setCellStyle(cell, i, j, iSheet);
+            if (i == 0) {
+                for (int j = 0; j < data.get(0).size(); j++) {
+                    Cell cell = row.createCell(j);
+                    Object value = data.get(i).get(j);
+                    setCellValue(cell, value, iSheet.getEmptyColumn());
+                    if (iStyle != null) {
+                        cell.setCellStyle(iStyle.getStyle());
+                    }
+                }
+            } else {
+                for (int j = 0; j < data.get(0).size(); j++) {
+                    Cell cell = row.createCell(j);
+                    Object value = data.get(i).get(j);
+                    setCellValue(cell, value, iSheet.getEmptyColumn());
+                    setCellStyle(cell, i, j, iSheet);
+                }
             }
         }
         autoColumnWidth(sheet, data.get(0).toArray());
@@ -225,7 +242,7 @@ public class ExcelWriter implements AutoCloseable {
             mapper = getMapper(data.get(0).getClass());
         }
         Class<?> beanClass = data.get(0).getClass();
-        Object[] fields = buildHeader(sheet, mapper);
+        Object[] fields = buildHeader(sheet, mapper, iSheet.getHeaderStyle());
         for (int i = 0; i < data.size(); i++) {
             Object instance = data.get(i);
             Row row = sheet.createRow(i + 1);
@@ -279,12 +296,14 @@ public class ExcelWriter implements AutoCloseable {
         }
     }
 
-    private static Object[] buildHeader(Sheet sheet, Map<String, String> mapper) {
+    private static Object[] buildHeader(Sheet sheet, Map<String, String> mapper, IStyle iStyle) {
         Row headerRow = sheet.createRow(0);
         Object[] fields = mapper.keySet().toArray();
         for (int i = 0; i < fields.length; i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(mapper.get(fields[i].toString()));
+            if (iStyle != null)
+                cell.setCellStyle(iStyle.getStyle());
         }
         return fields;
     }
