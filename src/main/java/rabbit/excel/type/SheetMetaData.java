@@ -1,5 +1,8 @@
 package rabbit.excel.type;
 
+/**
+ * 读取到的Sheet元数据
+ */
 public class SheetMetaData {
     private final int index;
     private final String name;
