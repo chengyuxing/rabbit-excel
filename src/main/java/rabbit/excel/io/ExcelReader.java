@@ -103,6 +103,7 @@ public class ExcelReader implements AutoCloseable {
      * 读取Excel装载为流
      *
      * @param convert 行数据转换
+     * @param <R>     结果类型参数
      * @return 行数据流
      * @throws IOException ex
      */

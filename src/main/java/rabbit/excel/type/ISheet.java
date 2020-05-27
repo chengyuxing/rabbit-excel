@@ -92,6 +92,8 @@ public class ISheet<T, U> {
 
     /**
      * 设置表体单元格样式函数
+     *
+     * @param cellStyle 单元格样式回调函数
      */
     public void setCellStyle(BiFunction<T, U, IStyle> cellStyle) {
         this.cellStyle = cellStyle;
