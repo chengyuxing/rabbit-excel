@@ -115,7 +115,7 @@ public class ISheet<T, U> {
      *     Danger danger = new Danger(writer.createCellStyle());
      *     ISheet{@code <Map<String, Object>, String>} iSheet = ISheet.of("sheet1", list);
      *     iSheet.setCellStyle((row, key) {@code ->} {
-     *         if (key.equals("c") && (double) row.get("c") {@code >} 700) {
+     *         if (key.equals("c"){@code &&} (double) row.get("c") {@code >} 700) {
      *             return danger;
      *         }
      *         return null;
