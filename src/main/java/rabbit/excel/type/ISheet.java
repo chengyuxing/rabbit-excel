@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 /**
- * Excel Sheet数据类
+ * Excel Sheet数据类<br>
  *
  * @param <T> 行数据类型参数
- * @param <U> 行数据索引类型（java bean：String，DataRow：String，Map：String，List：Integer）
+ * @param <U> 行数据索引类型
  */
 public class ISheet<T, U> {
     private String name;
@@ -27,13 +27,21 @@ public class ISheet<T, U> {
     }
 
     /**
-     * 创建一个sheet
+     * 创建一个sheet<br>
+     * 数据类型为{@code List<List<Object>>}时索引类型为{@code Integer}：
+     * <blockquote>
+     * <pre>{@code ISheet<List<Object>, Integer> sheet1 = ISheet.of("sheet1", list);}</pre>
+     * </blockquote>
+     * 数据类型为 {@link DataRow}, {@link Map}, javaBean时索引类型为{@code String}：
+     * <blockquote>
+     * <pre>{@code ISheet<Map<String, Object>, String> sheet = ISheet.of("sheet1", listMap);}</pre>
+     * </blockquote>
      *
      * @param name   名称
      * @param data   数据
      * @param mapper 表头字段名称映射(字段名，列名)
-     * @param <T>    行数据类型参数：List&lt;Object&gt;; DataRow; Map&lt;String,Object&gt;; 标准Java Bean(需指定注解Head，用于java bean的字段名映射)
-     * @param <U>    索引类型参数，除行数据类型List&lt;Object&gt;索引为Integer类型(单元格序号)以外，其他都为String类型(字段名)
+     * @param <T>    行数据类型参数：{@code List<Object>, Map<String, Object>}, {@link DataRow}, 标准Java Bean(需指定注解Head，用于java bean的字段名映射)
+     * @param <U>    索引类型参数
      * @return sheet
      * @see DataRow
      * @see Head
@@ -49,12 +57,20 @@ public class ISheet<T, U> {
     }
 
     /**
-     * 创建一个sheet
+     * 创建一个sheet<br>
+     * 数据类型为{@code List<List<Object>>}时索引类型为{@code Integer}：
+     * <blockquote>
+     * <pre>{@code ISheet<List<Object>, Integer> sheet1 = ISheet.of("sheet1", list);}</pre>
+     * </blockquote>
+     * 数据类型为 {@link DataRow}, {@link Map}, javaBean时索引类型为{@code String}：
+     * <blockquote>
+     * <pre>{@code ISheet<Map<String, Object>, String> sheet = ISheet.of("sheet1", listMap);}</pre>
+     * </blockquote>
      *
      * @param name 名称
      * @param data 数据
-     * @param <T>  行数据类型参数：List&lt;Object&gt;; DataRow; Map&lt;String,Object&gt;; 标准Java Bean(需指定注解Head，用于java bean的字段名映射)
-     * @param <U>  索引类型参数，除行数据类型List&lt;Object&gt;索引为Integer类型(单元格序号)以外，其他都为String类型(字段名)
+     * @param <T>  行数据类型参数：{@code List<Object>, Map<String, Object>}, {@link DataRow}, 标准Java Bean(需指定注解Head，用于java bean的字段名映射)
+     * @param <U>  索引类型参数
      * @return sheet
      * @see DataRow
      * @see Head
@@ -76,6 +92,7 @@ public class ISheet<T, U> {
      * 设置表头样式
      *
      * @param headerStyle 表头样式
+     * @see rabbit.excel.style.impl.Danger
      */
     public void setHeaderStyle(IStyle headerStyle) {
         this.headerStyle = headerStyle;
@@ -91,9 +108,23 @@ public class ISheet<T, U> {
     }
 
     /**
-     * 设置表体单元格样式函数
+     * 设置表体单元格样式函数<br><br>
+     * c字段大于700则添加红框例子：
+     * <blockquote>
+     * <pre>
+     *     Danger danger = new Danger(writer.createCellStyle());
+     *     ISheet{@code <Map<String, Object>, String>} iSheet = ISheet.of("sheet1", list);
+     *     iSheet.setCellStyle((row, key) {@code ->} {
+     *         if (key.equals("c") && (double) row.get("c") {@code >} 700) {
+     *             return danger;
+     *         }
+     *         return null;
+     *     });</pre>
+     * </blockquote>
      *
      * @param cellStyle 单元格样式回调函数
+     * @see IStyle
+     * @see rabbit.excel.style.impl.Danger
      */
     public void setCellStyle(BiFunction<T, U, IStyle> cellStyle) {
         this.cellStyle = cellStyle;

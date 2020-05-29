@@ -164,7 +164,13 @@ public class ExcelReader implements AutoCloseable {
             workbook = WorkbookFactory.create(inputStream);
     }
 
-    public Object getValue(Cell cell) {
+    /**
+     * 获取单元格的值
+     *
+     * @param cell 单元格
+     * @return 值
+     */
+    private Object getValue(Cell cell) {
         switch (cell.getCellType()) {
             case STRING:
                 return cell.getStringCellValue();
@@ -182,6 +188,11 @@ public class ExcelReader implements AutoCloseable {
         }
     }
 
+    /**
+     * 关闭工作簿
+     *
+     * @throws Exception 关闭异常
+     */
     @Override
     public void close() throws Exception {
         workbook.close();
