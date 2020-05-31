@@ -9,14 +9,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
  * Excel读取类
  */
-public class ExcelReader<R> {
+public class ExcelReader {
     private final Workbook workbook;
     private int sheetIndex = 0;
 
@@ -52,7 +51,7 @@ public class ExcelReader<R> {
      * @param sheetIndex sheet序号
      * @return Excel
      */
-    public ExcelReader<R> sheetAt(int sheetIndex) {
+    public ExcelReader sheetAt(int sheetIndex) {
         this.sheetIndex = sheetIndex;
         return this;
     }
@@ -60,26 +59,18 @@ public class ExcelReader<R> {
     /**
      * 惰性读取Excel装载为流，只有调用终端操作和短路操作才会真正开始执行<br>
      * 使用{@code try-with-resource}进行包裹，结束后将自动关闭输入流：
-     * <blockquote>
-     * <pre>try ({@link Stream}&lt;{@link DataRow}&gt; stream = Excels.&lt;DataRow&gt;reader("D:/test/styleExcel.xlsx").stream(r -&gt; r)) {
-     *         stream.limit(10).forEach(r -&gt; {
-     *             System.out.println(r.getValues());
-     *         });
-     *    }</pre>
-     * </blockquote>
      *
-     * @param convert 行数据转换
      * @return 行数据流
      */
-    public Stream<R> stream(Function<DataRow, R> convert) {
+    public Stream<DataRow> stream() {
         Sheet sheet = workbook.getSheetAt(sheetIndex);
         UncheckedCloseable close = UncheckedCloseable.wrap(workbook);
         Iterator<Row> iterator = sheet.rowIterator();
-        return StreamSupport.stream(new Spliterators.AbstractSpliterator<R>(Long.MAX_VALUE, Spliterator.ORDERED) {
+        return StreamSupport.stream(new Spliterators.AbstractSpliterator<DataRow>(Long.MAX_VALUE, Spliterator.ORDERED) {
             String[] names = null;
 
             @Override
-            public boolean tryAdvance(Consumer<? super R> action) {
+            public boolean tryAdvance(Consumer<? super DataRow> action) {
                 if (!iterator.hasNext()) {
                     return false;
                 }
@@ -88,7 +79,7 @@ public class ExcelReader<R> {
                 if (names == null) {
                     names = createDataHeader(row);
                 }
-                action.accept(convert.apply(createDataBody(names, row)));
+                action.accept(createDataBody(names, row));
                 return true;
             }
         }, false).onClose(close);

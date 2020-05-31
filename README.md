@@ -89,12 +89,11 @@ ExcelWriter writer = Excels.writer();
 ### 读取Excel文件
 
 ```java
-Excels.reader(new FileInputStream("/Users/chengyuxing/test/excels_user000000.xlsx"))
-                .sheetAt(1, 0, 20)
-                .where((i, r) -> i >= 0)
-                .where((i, r) -> !r.getString("姓名").equals("cyx"))
-                .stream(row -> row)
-                .forEach(System.out::println);
+try (Stream<DataRow> stream = Excels.reader(Paths.get("D:/test/styleExcel.xlsx")).stream()) {
+            stream.limit(10)
+                    .map(DataRow::toMap)
+                    .forEach(System.out::println);
+        }
 ```
 
 ### Test
@@ -131,9 +130,3 @@ public void CloseTest() throws Exception {
   writer.write(iSheet).saveTo("/Users/chengyuxing/test/styleExcel");
 }
 ```
-
-
-
-### 计划
-1. 可自定义表格主体样式✅
-2. 可自定义表头样式✅

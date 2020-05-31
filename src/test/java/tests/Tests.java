@@ -97,7 +97,7 @@ public class Tests {
 
         Excels.reader(new FileInputStream("/Users/chengyuxing/test/excels_user000000.xlsx"))
                 .sheetAt(1)
-                .stream(row -> row)
+                .stream()
                 .forEach(System.out::println);
     }
 
@@ -208,10 +208,10 @@ public class Tests {
     @Test
     public void readTest() throws Exception {
 //        Excels.reader(Paths.get("/Users/chengyuxing/test/styleExcel.xlsx"))
-        try (Stream<DataRow> stream = Excels.<DataRow>reader(Paths.get("D:/test/styleExcel.xlsx")).stream(r -> r)) {
-            stream.limit(10).forEach(r -> {
-                System.out.println(r.getValues());
-            });
+        try (Stream<DataRow> stream = Excels.reader(Paths.get("D:/test/styleExcel.xlsx")).stream()) {
+            stream.limit(10)
+                    .map(DataRow::toMap)
+                    .forEach(System.out::println);
         }
     }
 }
