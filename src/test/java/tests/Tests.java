@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Tests {
 
@@ -95,9 +96,7 @@ public class Tests {
                 .saveTo("/Users/chengyuxing/test/excels_user000000");
 
         Excels.reader(new FileInputStream("/Users/chengyuxing/test/excels_user000000.xlsx"))
-                .sheetAt(1, 0, 20)
-                .where((i, r) -> i >= 0)
-                .where((i, r) -> !r.getString("姓名").equals("cyx"))
+                .sheetAt(1)
                 .stream(row -> row)
                 .forEach(System.out::println);
     }
@@ -202,13 +201,17 @@ public class Tests {
             return null;
         });
 
-        writer.write(iSheet).saveTo("/Users/chengyuxing/test/styleExcel");
+//        writer.write(iSheet).saveTo("/Users/chengyuxing/test/styleExcel");
+        writer.write(iSheet).saveTo("D:/test/styleExcel");
     }
 
     @Test
     public void readTest() throws Exception {
-        Excels.reader(Paths.get("/Users/chengyuxing/test/styleExcel.xlsx"))
-                .stream(r->r)
-                .forEach(System.out::println);
+//        Excels.reader(Paths.get("/Users/chengyuxing/test/styleExcel.xlsx"))
+        try (Stream<DataRow> stream = Excels.<DataRow>reader(Paths.get("D:/test/styleExcel.xlsx")).stream(r -> r)) {
+            stream.limit(10).forEach(r -> {
+                System.out.println(r.getValues());
+            });
+        }
     }
 }

@@ -18,8 +18,8 @@ public final class Excels {
      * @param stream 输入流
      * @return Excel读取类
      */
-    public static ExcelReader reader(InputStream stream) {
-        return new ExcelReader(stream);
+    public static<R> ExcelReader<R> reader(InputStream stream) throws IOException {
+        return new ExcelReader<>(stream);
     }
 
     /**
@@ -29,7 +29,7 @@ public final class Excels {
      * @return Excel读取类
      * @throws FileNotFoundException ex
      */
-    public static ExcelReader reader(String name) throws FileNotFoundException {
+    public static<R> ExcelReader<R> reader(String name) throws IOException {
         return reader(new FileInputStream(name));
     }
     /**
@@ -39,7 +39,7 @@ public final class Excels {
      * @return Excel读取类
      * @throws IOException ex
      */
-    public static ExcelReader reader(Path path) throws IOException {
+    public static <R> ExcelReader<R> reader(Path path) throws IOException {
         return reader(Files.newInputStream(path));
     }
 
@@ -49,7 +49,7 @@ public final class Excels {
      * @param fileBytes 文件字节
      * @return Excel读取类
      */
-    public static ExcelReader reader(byte[] fileBytes) {
+    public static<R> ExcelReader<R> reader(byte[] fileBytes) throws IOException {
         return reader(new ByteArrayInputStream(fileBytes));
     }
 

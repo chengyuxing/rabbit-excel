@@ -2,45 +2,39 @@ package rabbit.excel.io;
 
 import org.apache.poi.ss.usermodel.*;
 import rabbit.common.types.DataRow;
+import rabbit.common.types.UncheckedCloseable;
 import rabbit.excel.type.SheetMetaData;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.BiPredicate;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Excel读取类
  */
-public class ExcelReader implements AutoCloseable {
-    private final InputStream inputStream;
-    private final List<BiPredicate<Integer, DataRow>> filters = new ArrayList<>();
-    private Workbook workbook;
+public class ExcelReader<R> {
+    private final Workbook workbook;
     private int sheetIndex = 0;
-    private int rowStart = 0;
-    private int count = -1;
 
     /**
      * 构造函数
      *
      * @param inputStream 输入流
      */
-    public ExcelReader(InputStream inputStream) {
-        this.inputStream = inputStream;
+    public ExcelReader(InputStream inputStream) throws IOException {
+        workbook = WorkbookFactory.create(inputStream);
     }
 
     /**
      * 获取所有Sheet
      *
      * @return list
-     * @throws IOException e
      */
-    public List<SheetMetaData> getSheets() throws IOException {
-        GenWorkbookIfNecessary();
+    public List<SheetMetaData> getSheets() {
         List<SheetMetaData> sheets = new ArrayList<>();
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             Sheet sheet = workbook.getSheetAt(i);
@@ -53,115 +47,89 @@ public class ExcelReader implements AutoCloseable {
     }
 
     /**
-     * where条件过滤
-     *
-     * @param rowFilter（当前序号，当前行）
-     * @return Excel
-     */
-    public ExcelReader where(BiPredicate<Integer, DataRow> rowFilter) {
-        filters.add(rowFilter);
-        return this;
-    }
-
-    /**
      * 指定读取sheet
      *
-     * @param sheetIndex 序号
-     * @param rowStart   开始行 从0开始
-     * @param count      条数
+     * @param sheetIndex sheet序号
      * @return Excel
      */
-    public ExcelReader sheetAt(int sheetIndex, int rowStart, int count) {
+    public ExcelReader<R> sheetAt(int sheetIndex) {
         this.sheetIndex = sheetIndex;
-        this.rowStart = rowStart;
-        this.count = count;
         return this;
     }
 
     /**
-     * 指定读取sheet
-     *
-     * @param sheetIndex sheet序号
-     * @param rowStart   开始行 从0开始
-     * @return Excel
-     */
-    public ExcelReader sheetAt(int sheetIndex, int rowStart) {
-        return sheetAt(sheetIndex, rowStart, -1);
-    }
-
-    /**
-     * 指定读取sheet
-     *
-     * @param sheetIndex sheet序号
-     * @return Excel
-     */
-    public ExcelReader sheetAt(int sheetIndex) {
-        return sheetAt(sheetIndex, 0, -1);
-    }
-
-    /**
-     * 读取Excel装载为流
+     * 惰性读取Excel装载为流，只有调用终端操作和短路操作才会真正开始执行<br>
+     * 使用{@code try-with-resource}进行包裹，结束后将自动关闭输入流：
+     * <blockquote>
+     * <pre>try ({@link Stream}&lt;{@link DataRow}&gt; stream = Excels.&lt;DataRow&gt;reader("D:/test/styleExcel.xlsx").stream(r -&gt; r)) {
+     *         stream.limit(10).forEach(r -&gt; {
+     *             System.out.println(r.getValues());
+     *         });
+     *    }</pre>
+     * </blockquote>
      *
      * @param convert 行数据转换
-     * @param <R>     结果类型参数
      * @return 行数据流
-     * @throws IOException ex
      */
-    public <R> Stream<R> stream(Function<DataRow, R> convert) throws IOException {
-        GenWorkbookIfNecessary();
-        Stream.Builder<R> builder = Stream.builder();
+    public Stream<R> stream(Function<DataRow, R> convert) {
         Sheet sheet = workbook.getSheetAt(sheetIndex);
-        int rowCount = sheet.getPhysicalNumberOfRows();
-        if (rowCount > 0) {
-            Row headerRow = sheet.getRow(0);
-            String[] header = new String[headerRow.getLastCellNum()];
+        UncheckedCloseable close = UncheckedCloseable.wrap(workbook);
+        Iterator<Row> iterator = sheet.rowIterator();
+        return StreamSupport.stream(new Spliterators.AbstractSpliterator<R>(Long.MAX_VALUE, Spliterator.ORDERED) {
+            String[] names = null;
 
-            for (int x = 0; x < header.length; x++) {
-                if (headerRow.getCell(x) != null) {
-                    header[x] = getValue(headerRow.getCell(x)).toString().toLowerCase();
+            @Override
+            public boolean tryAdvance(Consumer<? super R> action) {
+                if (!iterator.hasNext()) {
+                    return false;
                 }
-            }
-            if (count < 1 || count > rowCount) {
-                count = rowCount;
-            }
-            for (int i = rowStart; i < count; i++) {
-                Row row = sheet.getRow(i);
-                if (row != null) {
-                    Object[] value = new Object[header.length];
-                    String[] types = new String[header.length];
-                    for (int x = 0, y = header.length; x < y; x++) {
-                        if (row.getCell(x) != null) {
-                            value[x] = getValue(row.getCell(x));
-                            types[x] = value[x].getClass().getName();
-                        } else {
-                            value[x] = "";
-                            types[x] = "null";
-                        }
-                    }
-                    DataRow dataRow = DataRow.of(header, types, value);
-                    boolean passed = true;
-                    for (BiPredicate<Integer, DataRow> filter : filters) {
-                        if (!filter.test(i, dataRow)) {
-                            passed = false;
-                            break;
-                        }
-                    }
-                    if (passed)
-                        builder.accept(convert.apply(dataRow));
+                Row row = iterator.next();
+                // 此处处理表头只创建一次
+                if (names == null) {
+                    names = createDataHeader(row);
                 }
+                action.accept(convert.apply(createDataBody(names, row)));
+                return true;
             }
-        }
-        return builder.build();
+        }, false).onClose(close);
     }
 
     /**
-     * 如果有必要就创建一个新的工作簿
+     * 创建数据表头，默认以第一行数据为表头
      *
-     * @throws IOException e
+     * @param row 数据行
+     * @return 一组表头
      */
-    private void GenWorkbookIfNecessary() throws IOException {
-        if (workbook == null)
-            workbook = WorkbookFactory.create(inputStream);
+    private String[] createDataHeader(Row row) {
+        String[] names = new String[row.getLastCellNum()];
+        for (int i = 0; i < names.length; i++) {
+            if (row.getCell(i) != null) {
+                names[i] = getValue(row.getCell(i)).toString();
+            }
+        }
+        return names;
+    }
+
+    /**
+     * 创建行数据内容载体
+     *
+     * @param names 表头名
+     * @param row   数据行
+     * @return 数据行载体
+     */
+    private DataRow createDataBody(String[] names, Row row) {
+        String[] types = new String[names.length];
+        Object[] values = new Object[names.length];
+        for (int x = 0, y = names.length; x < y; x++) {
+            if (row.getCell(x) != null) {
+                values[x] = getValue(row.getCell(x));
+                types[x] = values[x].getClass().getName();
+            } else {
+                values[x] = "";
+                types[x] = "null";
+            }
+        }
+        return DataRow.of(names, types, values);
     }
 
     /**
@@ -186,17 +154,6 @@ public class ExcelReader implements AutoCloseable {
             default:
                 return "";
         }
-    }
-
-    /**
-     * 关闭工作簿
-     *
-     * @throws Exception 关闭异常
-     */
-    @Override
-    public void close() throws Exception {
-        workbook.close();
-        filters.clear();
     }
 }
 
