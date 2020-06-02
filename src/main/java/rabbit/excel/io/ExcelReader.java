@@ -23,6 +23,7 @@ public class ExcelReader {
      * 构造函数
      *
      * @param inputStream 输入流
+     * @throws IOException IOex
      */
     public ExcelReader(InputStream inputStream) throws IOException {
         workbook = WorkbookFactory.create(inputStream);

@@ -207,11 +207,11 @@ public class Tests {
 
     @Test
     public void readTest() throws Exception {
-//        Excels.reader(Paths.get("/Users/chengyuxing/test/styleExcel.xlsx"))
-        try (Stream<DataRow> stream = Excels.reader(Paths.get("D:/test/styleExcel.xlsx")).stream()) {
+        try (Stream<DataRow> stream = Excels.reader(Paths.get("/Users/chengyuxing/test/styleExcel.xlsx")).stream()) {
             stream.limit(30)
                     .map(DataRow::toMap)
-                    .forEach(System.out::println);
+                    .forEach(System.out::println)
+            ;
         }
     }
 }
