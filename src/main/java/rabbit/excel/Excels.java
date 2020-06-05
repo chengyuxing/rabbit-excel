@@ -48,6 +48,17 @@ public final class Excels {
     /**
      * 读Excel
      *
+     * @param file 文件对象
+     * @return Excel读取类
+     * @throws IOException ex
+     */
+    public static ExcelReader reader(File file) throws IOException {
+        return reader(new FileInputStream(file));
+    }
+
+    /**
+     * 读Excel
+     *
      * @param fileBytes 文件字节
      * @return Excel读取类
      * @throws IOException ex
