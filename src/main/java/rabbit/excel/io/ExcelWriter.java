@@ -11,6 +11,8 @@ import rabbit.excel.type.ISheet;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -111,7 +113,7 @@ public class ExcelWriter implements AutoCloseable {
      * @param close        是否在完成后关闭输出流
      * @throws IOException ioEx
      */
-    public void to(OutputStream outputStream, boolean close) throws IOException {
+    public void saveTo(OutputStream outputStream, boolean close) throws IOException {
         outputStream.write(getBytes());
         if (close) {
             outputStream.flush();
@@ -125,8 +127,8 @@ public class ExcelWriter implements AutoCloseable {
      * @param outputStream 输出流
      * @throws IOException ioEx
      */
-    public void to(OutputStream outputStream) throws IOException {
-        to(outputStream, true);
+    public void saveTo(OutputStream outputStream) throws IOException {
+        saveTo(outputStream, true);
     }
 
     /**
@@ -136,7 +138,27 @@ public class ExcelWriter implements AutoCloseable {
      * @throws IOException ioEx
      */
     public void saveTo(String path) throws IOException {
-        to(new FileOutputStream(fixedPath(path)));
+        saveTo(new FileOutputStream(fixedPath(path)));
+    }
+
+    /**
+     * 保存Excel到文件对象
+     *
+     * @param file 文件对象
+     * @throws IOException ioEx
+     */
+    public void saveTo(File file) throws IOException {
+        saveTo(new FileOutputStream(file));
+    }
+
+    /**
+     * 保存Excel到路径对象
+     *
+     * @param path 路径对象
+     * @throws IOException ioEx
+     */
+    public void saveTo(Path path) throws IOException {
+        saveTo(Files.newOutputStream(path));
     }
 
     /**
