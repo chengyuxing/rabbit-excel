@@ -201,8 +201,8 @@ public class Tests {
             return null;
         });
 
-//        writer.write(iSheet).saveTo("/Users/chengyuxing/test/styleExcel");
-        writer.write(iSheet).saveTo("D:/test/styleExcel");
+        writer.saveTo("/Users/chengyuxing/test/styleExcel");
+//        writer.saveTo("D:/test/styleExcel");
     }
 
     @Test
