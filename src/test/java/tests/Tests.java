@@ -201,17 +201,27 @@ public class Tests {
             return null;
         });
 
-        writer.saveTo("/Users/chengyuxing/test/styleExcel");
+        writer.write(iSheet).saveTo("/Users/chengyuxing/test/styleExcel");
 //        writer.saveTo("D:/test/styleExcel");
     }
 
     @Test
     public void readTest() throws Exception {
         try (Stream<DataRow> stream = Excels.reader(Paths.get("/Users/chengyuxing/test/styleExcel.xlsx")).stream()) {
-            stream.limit(30)
+            stream.limit(1000)
                     .map(DataRow::toMap)
                     .forEach(System.out::println)
             ;
         }
+    }
+
+    @Test
+    public void tsv() throws Exception {
+//        TSVReader tsvReader = new TSVReader(new FileInputStream("/Users/chengyuxing/Downloads/x.tsv"));
+//        try (Stream<DataRow> stream = tsvReader.stream()) {
+//            stream//.limit(2)
+//                    .map(DataRow::toMap)
+//                    .forEach(System.out::println);
+//        }
     }
 }
