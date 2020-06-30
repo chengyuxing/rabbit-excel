@@ -3,19 +3,19 @@ package rabbit.excel.type;
 /**
  * 读取到的Sheet元数据
  */
-public class SheetMetaData {
+public class SheetInfo {
     private final int index;
     private final String name;
     private final int size;
 
-    private SheetMetaData(int index, String name, int size) {
+    private SheetInfo(int index, String name, int size) {
         this.index = index;
         this.name = name;
         this.size = size;
     }
 
-    public static SheetMetaData of(int index, String name, int size) {
-        return new SheetMetaData(index, name, size);
+    public static SheetInfo of(int index, String name, int size) {
+        return new SheetInfo(index, name, size);
     }
 
     public int getIndex() {

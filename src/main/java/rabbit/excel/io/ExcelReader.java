@@ -3,7 +3,7 @@ package rabbit.excel.io;
 import org.apache.poi.ss.usermodel.*;
 import rabbit.common.types.DataRow;
 import rabbit.common.types.UncheckedCloseable;
-import rabbit.excel.type.SheetMetaData;
+import rabbit.excel.type.SheetInfo;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,13 +34,13 @@ public class ExcelReader {
      *
      * @return list
      */
-    public List<SheetMetaData> getSheets() {
-        List<SheetMetaData> sheets = new ArrayList<>();
+    public List<SheetInfo> getSheets() {
+        List<SheetInfo> sheets = new ArrayList<>();
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             Sheet sheet = workbook.getSheetAt(i);
             if (sheet.getPhysicalNumberOfRows() != 0) {
                 String sheetName = sheet.getSheetName();
-                sheets.add(SheetMetaData.of(i, sheetName, sheet.getPhysicalNumberOfRows()));
+                sheets.add(SheetInfo.of(i, sheetName, sheet.getPhysicalNumberOfRows()));
             }
         }
         return Collections.unmodifiableList(sheets);
