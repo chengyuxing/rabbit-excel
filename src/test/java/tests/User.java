@@ -1,13 +1,8 @@
 package tests;
 
-import rabbit.excel.type.Head;
-
 public class User {
-    @Head("姓名")
     private final String name;
-    @Head("地址")
     private final String address;
-    @Head("国家")
     private final String country;
 
     public User(String name, String address, String country) {

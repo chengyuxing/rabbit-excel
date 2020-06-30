@@ -1,6 +1,7 @@
 package tests;
 
 import com.healthmarketscience.jackcess.*;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import rabbit.common.io.TSVReader;
 import rabbit.common.io.TSVWriter;
@@ -82,22 +83,17 @@ public class Tests {
         mapper.put("age", "年龄");
         mapper.put("address", "地址");
 
-        List<User> users = Arrays.asList(
-                new User("cyx", "昆明", "中国"),
-                new User("Jackson", "美国得克萨斯州", "美国")
-        );
+        List<DataRow> row1 = list1.stream().map(l -> DataRow.fromList(l, "A_A", "B", "C", "D")).collect(Collectors.toList());
 
-        Map<String, String> javaBeanMapper = new HashMap<>();
-        javaBeanMapper.put("name", "小名");
-        javaBeanMapper.put("address", "家庭地址");
-        javaBeanMapper.put("country", "所属国家");
+        Excels.writer().write(
+                ISheet.of("SheetB",
+                        row1),
+                ISheet.of("SheetC",
+                        list2.stream().map(DataRow::fromMap).collect(Collectors.toList()),
+                        mapper))
+                .saveTo("/Users/chengyuxing/test/datarow2");
 
-        Excels.writer().write(ISheet.of("SheetA", list1, javaBeanMapper),
-                ISheet.of("SheetB", users, javaBeanMapper),
-                ISheet.of("SheetC", list2, mapper))
-                .saveTo("/Users/chengyuxing/test/excels_user000000");
-
-        Excels.reader(new FileInputStream("/Users/chengyuxing/test/excels_user000000.xlsx"))
+        Excels.reader(new FileInputStream("/Users/chengyuxing/test/datarow2.xlsx"))
                 .sheetAt(1)
                 .stream()
                 .forEach(System.out::println);
@@ -142,40 +138,15 @@ public class Tests {
         Danger danger = new Danger(writer.createCellStyle());
         Success success = new Success(writer.createCellStyle());
 
-        ISheet<Map<String, Object>, String> sheet = ISheet.of("sheet1", list2);
-        sheet.setCellStyle((row, field) -> {
-            if ((int) row.get("age") % 2 != 0 && field.equals("age"))
-                return danger;
-            if (row.get("address").equals("kunming"))
-                return success;
-            return null;
-        });
-
-        ISheet<List<Object>, Integer> sheet1 = ISheet.of("sheet2", list1);
-        sheet1.setHeaderStyle(new SeaBlue(writer.createCellStyle()));
-        sheet1.setCellStyle((row, index) -> {
-            if (index == 2 && row.get(index).equals("c")) {
-                return danger;
-            }
-            return null;
-        });
-
-        ISheet<User, String> userSheet = ISheet.of("users", users);
-        userSheet.setCellStyle((u, field) -> {
-            if (field.equals("name") && u.getName().equals("cyx")) {
-                return danger;
-            }
-            return null;
-        });
-
-        writer.write(sheet, sheet1, userSheet)
-                .saveTo("/Users/chengyuxing/test/writer.xlsx");
+//        writer.write(sheet, sheet1, userSheet)
+//                .saveTo("/Users/chengyuxing/test/writer.xlsx");
 
     }
 
-    @Test
-    public void writeTest() throws Exception {
-        List<Map<String, Object>> list = new ArrayList<>();
+    static final List<Map<String, Object>> list = new ArrayList<>();
+
+    @BeforeClass
+    public static void init() {
         for (int i = 0; i < 10000; i++) {
             Map<String, Object> row = new HashMap<>();
             row.put("a", "chengyuxing");
@@ -186,16 +157,20 @@ public class Tests {
             row.put("f", i % 3 == 0 ? "" : "ok");
             list.add(row);
         }
+    }
+
+    @Test
+    public void writeTest() throws Exception {
 
         ExcelWriter writer = Excels.writer();
 
         Danger danger = new Danger(writer.createCellStyle());
         SeaBlue seaBlue = new SeaBlue(writer.createCellStyle());
 
-        ISheet<Map<String, Object>, String> iSheet = ISheet.of("sheet100", list);
+        ISheet iSheet = ISheet.of("sheet100", list.stream().map(DataRow::fromMap).collect(Collectors.toList()));
         iSheet.setEmptyColumn("--");    //填充空单元格
         iSheet.setHeaderStyle(seaBlue);
-        iSheet.setCellStyle((row, key) -> {
+        iSheet.setCellStyle((row, key, index) -> {
             //c字段大于700则添加红框
             if (key.equals("c") && (double) row.get("c") > 700) {
                 return danger;
@@ -203,8 +178,7 @@ public class Tests {
             return null;
         });
 
-        writer.write(iSheet).saveTo("/Users/chengyuxing/test/styleExcel");
-//        writer.saveTo("D:/test/styleExcel");
+        writer.write(iSheet).saveTo("/Users/chengyuxing/test/data_row");
     }
 
     @Test
