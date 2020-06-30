@@ -117,9 +117,9 @@ public void CloseTest() throws Exception {
 
   Danger danger = new Danger(writer.createCellStyle());
 
-  ISheet<Map<String, Object>, String> iSheet = ISheet.of("sheet100", list);
+  ISheet iSheet = ISheet.of("sheet100", list.stream().map(DataRow::fromMap).collect(Collectors.toList()));
   iSheet.setEmptyColumn("--");    //填充空单元格
-  iSheet.setCellStyle((row, key) -> {
+  iSheet.setCellStyle((row, key, index) -> {
     //c字段大于700则添加红框
     if (key.equals("c") && (double) row.get("c") > 700) {
       return danger;
