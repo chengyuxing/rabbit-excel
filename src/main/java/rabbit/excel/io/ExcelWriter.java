@@ -173,7 +173,7 @@ public class ExcelWriter implements AutoCloseable {
                     Cell cell = row.createCell(j);
                     Object value = data.get(i).get(fields[j]);
                     setCellValue(cell, value, iSheet.getEmptyColumn());
-                    setCellStyle(cell, data.get(i), fields[j], i, iSheet.getCellStyle());
+                    setCellStyle(cell, data.get(i), fields[j], j, iSheet.getCellStyle());
                 }
             }
             autoColumnWidth(sheet, fields);
