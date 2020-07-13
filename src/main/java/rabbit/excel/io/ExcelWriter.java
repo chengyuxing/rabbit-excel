@@ -82,7 +82,7 @@ public class ExcelWriter implements AutoCloseable {
      */
     public byte[] toBytes() {
         if (iSheets.size() < 1) {
-            throw new IllegalStateException("there is noting to write! don't you invoke method write(...) to add sheet data?");
+            throw new IllegalStateException("there is nothing to write! don't you invoke method write(...) to add sheet data?");
         }
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -91,7 +91,6 @@ public class ExcelWriter implements AutoCloseable {
                 ExcelWriter.writeSheet(sheet, s);
             }
             workbook.write(out);
-            workbook.close();
         } catch (IOException e) {
             log.error("io ex:{}", e.getMessage());
         }
