@@ -99,50 +99,6 @@ public class Tests {
                 .forEach(System.out::println);
     }
 
-    @Test
-    public void excelW() throws Exception {
-
-        List<Map<String, Object>> list2 = new ArrayList<>();
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("name", "chengyuxing");
-        map.put("age", 21);
-        map.put("address", "kunming");
-
-        Map<String, Object> map1 = new LinkedHashMap<>();
-        map1.put("name", "chengyuxing3");
-        map1.put("age", 29);
-        map1.put("address", "kunming");
-
-        Map<String, Object> map2 = new LinkedHashMap<>();
-        map2.put("name", "chengyuxing2");
-        map2.put("age", 22);
-        map2.put("address", "kunming");
-
-        list2.add(map);
-        list2.add(map2);
-        list2.add(map1);
-
-
-        List<List<Object>> list1 = Arrays.asList(
-                Arrays.asList("a", "b", "c", "d"),
-                Arrays.asList("e", "f", "g", "h", "i")
-        );
-
-        List<User> users = Arrays.asList(
-                new User("cyx", "昆明", "中国"),
-                new User("Jackson", "美国得克萨斯州", "美国")
-        );
-
-        ExcelWriter writer = Excels.writer();
-
-        Danger danger = new Danger(writer.createCellStyle());
-        Success success = new Success(writer.createCellStyle());
-
-//        writer.write(sheet, sheet1, userSheet)
-//                .saveTo("/Users/chengyuxing/test/writer.xlsx");
-
-    }
-
     static final List<Map<String, Object>> list = new ArrayList<>();
 
     @BeforeClass
