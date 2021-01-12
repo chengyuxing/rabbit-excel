@@ -1,5 +1,6 @@
 package rabbit.excel.io;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,7 +130,14 @@ public class ExcelWriter implements AutoCloseable {
      * @throws IOException ioEx
      */
     public void saveTo(String path) throws IOException {
-        saveTo(new FileOutputStream(fixedPath(path)));
+        String suffix = "";
+        if (!path.endsWith(".xlsx") && !path.endsWith(".xls")) {
+            suffix = ".xlsx";
+            if (workbook instanceof HSSFWorkbook) {
+                suffix = ".xls";
+            }
+        }
+        saveTo(new FileOutputStream(path + suffix));
     }
 
     /**
@@ -213,12 +221,6 @@ public class ExcelWriter implements AutoCloseable {
                 cell.setCellStyle(iStyle.getStyle());
         }
         return fields;
-    }
-
-    private static String fixedPath(String path) {
-        if (!path.endsWith(".xlsx"))
-            path += ".xlsx";
-        return path;
     }
 
     @Override

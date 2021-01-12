@@ -140,7 +140,7 @@ public class Tests {
     @Test
     public void readTest() throws Exception {
         try (Stream<DataRow> stream = Excels.reader(Paths.get("/Users/chengyuxing/test/styleExcel.xlsx")).stream()) {
-            stream.limit(1000)
+            stream.limit(10)
                     .map(DataRow::toMap)
                     .forEach(System.out::println)
             ;
