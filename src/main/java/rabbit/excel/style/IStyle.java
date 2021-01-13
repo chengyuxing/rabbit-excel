@@ -19,7 +19,6 @@ public abstract class IStyle {
      */
     public IStyle(CellStyle style) {
         this.style = style;
-        init();
     }
 
     /**
@@ -34,7 +33,7 @@ public abstract class IStyle {
     /**
      * 初始化
      */
-    private void init() {
+    public void init() {
         Border border = border();
         if (border != null) {
             style.setBorderBottom(border.getBorderStyle());

@@ -16,11 +16,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * excel写入类
+ * excel文件生成器
  */
 public class ExcelWriter implements AutoCloseable {
     public final static Logger log = LoggerFactory.getLogger(ExcelWriter.class);
-
     private final Workbook workbook;
     private final List<ISheet> iSheets = new ArrayList<>();
 
@@ -200,8 +199,10 @@ public class ExcelWriter implements AutoCloseable {
     private static void setCellStyle(Cell cell, DataRow row, String column, int index, TiFunction<DataRow, String, Integer, IStyle> styleFunc) {
         if (styleFunc != null) {
             IStyle style = styleFunc.apply(row, column, index);
-            if (style != null)
+            if (style != null) {
+                style.init();
                 cell.setCellStyle(style.getStyle());
+            }
         }
     }
 
@@ -217,8 +218,10 @@ public class ExcelWriter implements AutoCloseable {
         for (int i = 0; i < fields.length; i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(mapper.get(fields[i]));
-            if (iStyle != null)
+            if (iStyle != null) {
+                iStyle.init();
                 cell.setCellStyle(iStyle.getStyle());
+            }
         }
         return fields;
     }

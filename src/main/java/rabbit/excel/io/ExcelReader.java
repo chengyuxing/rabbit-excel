@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * Excel读取类
+ * Excel文件读取器
  */
 public class ExcelReader {
     private final Workbook workbook;

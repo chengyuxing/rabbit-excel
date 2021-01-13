@@ -4,13 +4,11 @@ import com.healthmarketscience.jackcess.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import rabbit.common.io.TSVReader;
-import rabbit.common.io.TSVWriter;
 import rabbit.common.types.DataRow;
 import rabbit.excel.Excels;
 import rabbit.excel.io.ExcelWriter;
 import rabbit.excel.style.impl.Danger;
 import rabbit.excel.style.impl.SeaBlue;
-import rabbit.excel.style.impl.Success;
 import rabbit.excel.type.ISheet;
 
 import java.io.File;
@@ -83,11 +81,8 @@ public class Tests {
         mapper.put("age", "年龄");
         mapper.put("address", "地址");
 
-        List<DataRow> row1 = list1.stream().map(l -> DataRow.fromList(l, "A_A", "B", "C", "D")).collect(Collectors.toList());
 
         Excels.writer().write(
-                ISheet.of("SheetB",
-                        row1),
                 ISheet.of("SheetC",
                         list2.stream().map(DataRow::fromMap).collect(Collectors.toList()),
                         mapper))
@@ -103,13 +98,13 @@ public class Tests {
 
     @BeforeClass
     public static void init() {
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 1000; i++) {
             Map<String, Object> row = new HashMap<>();
-            row.put("a", "chengyuxing");
-            row.put("b", i);
+            row.put("姓名", "chengyuxing");
+            row.put("编号", i);
             row.put("c", Math.random() * 1000);
             row.put("d", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            row.put("e", "昆明市");
+            row.put("城市", "昆明市");
             row.put("f", i % 3 == 0 ? "" : "ok");
             list.add(row);
         }
@@ -121,11 +116,11 @@ public class Tests {
         ExcelWriter writer = Excels.writer();
 
         Danger danger = new Danger(writer.createCellStyle());
-        SeaBlue seaBlue = new SeaBlue(writer.createCellStyle());
+        BoldFont bold = new BoldFont(writer.createCellStyle(), writer.createFont());
 
         ISheet iSheet = ISheet.of("sheet100", list.stream().map(DataRow::fromMap).collect(Collectors.toList()));
         iSheet.setEmptyColumn("--");    //填充空单元格
-        iSheet.setHeaderStyle(seaBlue);
+        iSheet.setHeaderStyle(bold);
         iSheet.setCellStyle((row, key, index) -> {
             //c字段大于700则添加红框
             if (key.equals("c") && (double) row.get("c") > 700) {
