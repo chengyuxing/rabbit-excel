@@ -17,6 +17,7 @@ public class XHeader {
      * 添加一行表头
      *
      * @param row 行
+     * @return 当前表头
      */
     public XHeader add(XRow row) {
         if (!isEmpty()) {
