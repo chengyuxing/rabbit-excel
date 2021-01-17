@@ -18,6 +18,8 @@ import java.util.stream.StreamSupport;
 public class ExcelReader {
     private final Workbook workbook;
     private int sheetIndex = 0;
+    private int headerIndex = 0;
+    private String[] fields;
 
     /**
      * 构造函数
@@ -58,6 +60,28 @@ public class ExcelReader {
     }
 
     /**
+     * 指定列命名表头所在的行号
+     *
+     * @param headerIndex 列命名表头所在的行号
+     * @return Excel
+     */
+    public ExcelReader namedHeaderAt(int headerIndex) {
+        this.headerIndex = headerIndex;
+        return this;
+    }
+
+    /**
+     * 自定义字段列映射，顺序和excel列保持一致，长度一致
+     *
+     * @param fields 字段集合
+     * @return Excel
+     */
+    public ExcelReader fieldMap(String[] fields) {
+        this.fields = fields;
+        return this;
+    }
+
+    /**
      * 惰性读取Excel装载为流，只有调用终端操作和短路操作才会真正开始执行<br>
      * 使用{@code try-with-resource}进行包裹，结束后将自动关闭输入流：
      *
@@ -67,6 +91,12 @@ public class ExcelReader {
         Sheet sheet = workbook.getSheetAt(sheetIndex);
         UncheckedCloseable close = UncheckedCloseable.wrap(workbook);
         Iterator<Row> iterator = sheet.rowIterator();
+        while (headerIndex > 0) {
+            if (iterator.hasNext()) {
+                iterator.next();
+                headerIndex--;
+            }
+        }
         return StreamSupport.stream(new Spliterators.AbstractSpliterator<DataRow>(Long.MAX_VALUE, Spliterator.ORDERED) {
             String[] names = null;
 
@@ -78,7 +108,11 @@ public class ExcelReader {
                 Row row = iterator.next();
                 // 此处处理表头只创建一次
                 if (names == null) {
-                    names = createDataHeader(row);
+                    if (fields != null) {
+                        names = fields;
+                    } else {
+                        names = createDataHeader(row);
+                    }
                 }
                 action.accept(createDataBody(names, row));
                 return true;
@@ -97,6 +131,8 @@ public class ExcelReader {
         for (int i = 0; i < names.length; i++) {
             if (row.getCell(i) != null) {
                 names[i] = getValue(row.getCell(i)).toString();
+            } else {
+                names[i] = "#" + i + "#";
             }
         }
         return names;
