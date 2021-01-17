@@ -2,40 +2,38 @@ package rabbit.excel.type;
 
 import rabbit.common.types.DataRow;
 import rabbit.common.types.TiFunction;
-import rabbit.excel.style.IStyle;
+import rabbit.excel.style.XStyle;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Excel Sheet数据类<br>
  */
-public class ISheet {
+public class XSheet {
     private String name;
-    private Map<String, String> mapper;
+    private XHeader xHeader;
     private List<DataRow> data;
     private String emptyColumn = "";
-    private TiFunction<DataRow, String, Integer, IStyle> cellStyle;
-    private IStyle headerStyle;
+    private TiFunction<DataRow, String, Integer, XStyle> cellStyle;
+    private XStyle headerStyle;
 
-    ISheet() {
+    XSheet() {
     }
 
     /**
      * 创建一个sheet<br>
      *
-     * @param name   名称
-     * @param data   数据
-     * @param mapper 表头字段名称映射(字段名，列名)
+     * @param name    名称
+     * @param data    数据
+     * @param xHeader 表头
      * @return sheet
      * @see DataRow
      */
-    public static ISheet of(String name, List<DataRow> data, Map<String, String> mapper) {
-        ISheet sheet = new ISheet();
+    public static XSheet of(String name, List<DataRow> data, XHeader xHeader) {
+        XSheet sheet = new XSheet();
         sheet.setName(name);
         sheet.setData(data);
-        sheet.setMapper(mapper);
+        sheet.setXHeader(xHeader);
         return sheet;
     }
 
@@ -47,8 +45,8 @@ public class ISheet {
      * @return sheet
      * @see DataRow
      */
-    public static ISheet of(String name, List<DataRow> data) {
-        return of(name, data, Collections.emptyMap());
+    public static XSheet of(String name, List<DataRow> data) {
+        return of(name, data, new XHeader());
     }
 
     /**
@@ -56,7 +54,7 @@ public class ISheet {
      *
      * @return 表头样式
      */
-    public IStyle getHeaderStyle() {
+    public XStyle getHeaderStyle() {
         return headerStyle;
     }
 
@@ -64,9 +62,8 @@ public class ISheet {
      * 设置表头样式
      *
      * @param headerStyle 表头样式
-     * @see rabbit.excel.style.impl.Danger
      */
-    public void setHeaderStyle(IStyle headerStyle) {
+    public void setHeaderStyle(XStyle headerStyle) {
         this.headerStyle = headerStyle;
     }
 
@@ -75,7 +72,7 @@ public class ISheet {
      *
      * @return 表体单元格样式函数
      */
-    public TiFunction<DataRow, String, Integer, IStyle> getCellStyle() {
+    public TiFunction<DataRow, String, Integer, XStyle> getCellStyle() {
         return cellStyle;
     }
 
@@ -84,9 +81,10 @@ public class ISheet {
      * e.g. c字段大于700则添加红框例子：
      * <blockquote>
      * <pre>
-     *     Danger danger = new Danger(writer.createCellStyle());
-     *     ISheet iSheet = ISheet.of("sheet1", list);
-     *     iSheet.setCellStyle((row, key, index) {@code ->} {
+     *     XStyle danger = writer.createStyle();
+     *     danger.setBorder(new Border(BorderStyle.DOUBLE, IndexedColors.RED));
+     *     XSheet xSheet = ISheet.of("sheet1", list);
+     *     xSheet.setCellStyle((row, key, index) {@code ->} {
      *         if (key.equals("c"){@code &&} (double) row.get("c") {@code >} 700) {
      *             return danger;
      *         }
@@ -95,10 +93,8 @@ public class ISheet {
      * </blockquote>
      *
      * @param cellStyle 单元格样式回调函数 {@code <数据行，列名，列序号>}
-     * @see IStyle
-     * @see rabbit.excel.style.impl.Danger
      */
-    public void setCellStyle(TiFunction<DataRow, String, Integer, IStyle> cellStyle) {
+    public void setCellStyle(TiFunction<DataRow, String, Integer, XStyle> cellStyle) {
         this.cellStyle = cellStyle;
     }
 
@@ -118,12 +114,12 @@ public class ISheet {
         this.name = name;
     }
 
-    public Map<String, String> getMapper() {
-        return mapper;
+    public XHeader getXHeader() {
+        return xHeader;
     }
 
-    void setMapper(Map<String, String> mapper) {
-        this.mapper = mapper;
+    void setXHeader(XHeader xHeader) {
+        this.xHeader = xHeader;
     }
 
     public String getEmptyColumn() {

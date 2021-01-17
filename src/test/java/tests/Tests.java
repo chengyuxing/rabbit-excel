@@ -1,15 +1,22 @@
 package tests;
 
 import com.healthmarketscience.jackcess.*;
+import com.healthmarketscience.jackcess.Row;
+import com.healthmarketscience.jackcess.Table;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import rabbit.common.io.TSVReader;
 import rabbit.common.types.DataRow;
 import rabbit.excel.Excels;
 import rabbit.excel.io.ExcelWriter;
-import rabbit.excel.style.impl.Danger;
-import rabbit.excel.style.impl.SeaBlue;
-import rabbit.excel.type.ISheet;
+import rabbit.excel.style.XStyle;
+import rabbit.excel.style.props.Border;
+import rabbit.excel.style.props.FillGround;
+import rabbit.excel.type.XSheet;
+import rabbit.excel.type.XHeader;
+import rabbit.excel.type.XRow;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,6 +29,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Tests {
+
+    @Test
+    public void ListTest() throws Exception {
+        String[] names = new String[10];
+        Arrays.fill(names, "___");
+        names[5] = "A";
+        System.out.println(Arrays.toString(names));
+    }
 
     @Test
     public void AccessTest() throws IOException {
@@ -51,11 +66,18 @@ public class Tests {
     }
 
     @Test
+    public void arrHeader() throws Exception {
+        CellRangeAddress cellAddresses = new CellRangeAddress(1, 1, 1, 3);
+        System.out.println(cellAddresses.formatAsString());
+        CellRangeAddress format = CellRangeAddress.valueOf("C5:C5");
+        System.out.println(format.getFirstColumn());
+        System.out.println(format.getLastColumn());
+        System.out.println(format.getFirstRow());
+        System.out.println(format.getLastRow());
+    }
+
+    @Test
     public void test1() throws Exception {
-        List<List<Object>> list1 = Arrays.asList(
-                Arrays.asList("a", "b", "c", "d"),
-                Arrays.asList("e", "f", "g", "h", "i")
-        );
         List<Map<String, Object>> list2 = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
         map.put("name", "chengyuxing");
@@ -76,29 +98,54 @@ public class Tests {
         list2.add(map2);
         list2.add(map1);
 
-        Map<String, String> mapper = new HashMap<>();
-        mapper.put("name", "姓名");
-        mapper.put("age", "年龄");
-        mapper.put("address", "地址");
+        ExcelWriter writer = Excels.writer();
 
+        XStyle center = writer.createStyle();
+        center.setStyle(s -> {
+            s.setAlignment(HorizontalAlignment.CENTER);
+            s.setVerticalAlignment(VerticalAlignment.CENTER);
+        });
 
-        Excels.writer().write(
-                ISheet.of("SheetC",
-                        list2.stream().map(DataRow::fromMap).collect(Collectors.toList()),
-                        mapper))
-                .saveTo("/Users/chengyuxing/test/datarow2");
+        XStyle seaBlue = writer.createStyle();
+        seaBlue.setForeground(new FillGround(IndexedColors.LIGHT_ORANGE, FillPatternType.SOLID_FOREGROUND));
+        seaBlue.setBorder(new Border(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT));
+        seaBlue.setStyle(s -> {
+            s.setAlignment(HorizontalAlignment.CENTER);
+            s.setVerticalAlignment(VerticalAlignment.CENTER);
+        });
 
-        Excels.reader(new FileInputStream("/Users/chengyuxing/test/datarow2.xlsx"))
-                .sheetAt(1)
-                .stream()
-                .forEach(System.out::println);
+        XHeader headers = new XHeader();
+
+        XRow title = new XRow();
+        title.add("学生信息统计表", CellRangeAddress.valueOf("A1:C2"));
+
+        XRow header = new XRow();
+        header.set("name", "姓名", CellRangeAddress.valueOf("A3:A4"), center)
+                .add("其他信息", CellRangeAddress.valueOf("B3:C3"), center);
+
+        XRow header2 = new XRow();
+        header2.set("age", "年龄", CellRangeAddress.valueOf("B4:B4"))
+                .set("address", "地址", CellRangeAddress.valueOf("H4:H4"));
+
+        headers.add(title);
+        headers.add(header);
+        headers.add(header2);
+
+        System.out.println(headers.getRows());
+
+        XSheet sheet = XSheet.of("SheetC",
+                list2.stream().map(DataRow::fromMap).collect(Collectors.toList()),
+                headers);
+        sheet.setHeaderStyle(seaBlue);
+
+        writer.write(sheet).saveTo("/Users/chengyuxing/Downloads/datarow2");
     }
 
     static final List<Map<String, Object>> list = new ArrayList<>();
 
     @BeforeClass
     public static void init() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10; i++) {
             Map<String, Object> row = new HashMap<>();
             row.put("姓名", "chengyuxing");
             row.put("编号", i);
@@ -115,13 +162,40 @@ public class Tests {
 
         ExcelWriter writer = Excels.writer();
 
-        Danger danger = new Danger(writer.createCellStyle());
-        BoldFont bold = new BoldFont(writer.createCellStyle(), writer.createFont());
+        XStyle danger = writer.createStyle();
+        danger.setBorder(new Border(BorderStyle.DOUBLE, IndexedColors.RED));
 
-        ISheet iSheet = ISheet.of("sheet100", list.stream().map(DataRow::fromMap).collect(Collectors.toList()));
-        iSheet.setEmptyColumn("--");    //填充空单元格
-        iSheet.setHeaderStyle(bold);
-        iSheet.setCellStyle((row, key, index) -> {
+        XStyle bold = writer.createStyle();
+        bold.setStyle(s -> {
+            Font font = writer.createFont();
+            font.setBold(true);
+            font.setItalic(true);
+            s.setFont(font);
+        });
+
+        XStyle center = writer.createStyle();
+        center.setStyle(s -> {
+            s.setAlignment(HorizontalAlignment.CENTER);
+            s.setVerticalAlignment(VerticalAlignment.CENTER);
+        });
+
+        XRow xRow = new XRow();
+        xRow.add("随机数据统计表", CellRangeAddress.valueOf("A1:F2"), center);
+        XHeader header = new XHeader();
+        XRow xRow1 = new XRow();
+        xRow1.set("d", "日期时间", CellRangeAddress.valueOf("A3:A3"));
+        xRow1.set("编号", "序号");
+        xRow1.set("c", "分数");
+        xRow1.set("城市", "所在城市");
+        xRow1.set("姓名", "测试者");
+        xRow1.set("f", "状态");
+        header.add(xRow);
+        header.add(xRow1);
+
+        XSheet xSheet = XSheet.of("sheet100", list.stream().map(DataRow::fromMap).collect(Collectors.toList()), header);
+        xSheet.setEmptyColumn("--");    //填充空单元格
+        xSheet.setHeaderStyle(bold);
+        xSheet.setCellStyle((row, key, index) -> {
             //c字段大于700则添加红框
             if (key.equals("c") && (double) row.get("c") > 700) {
                 return danger;
@@ -129,7 +203,7 @@ public class Tests {
             return null;
         });
 
-        writer.write(iSheet).saveTo("/Users/chengyuxing/test/data_row");
+        writer.write(xSheet).saveTo("/Users/chengyuxing/Downloads/data_row");
     }
 
     @Test
