@@ -40,12 +40,6 @@ public class XHeader {
             }
         }
         rows.add(row);
-        if (row.getMaxRowNumber() > maxRowNumber) {
-            maxRowNumber = row.getMaxRowNumber();
-        }
-        if (row.getMaxColumnNumber() > maxColumnNumber) {
-            maxColumnNumber = row.getMaxColumnNumber();
-        }
         return this;
     }
 
@@ -64,6 +58,12 @@ public class XHeader {
      * @return 最大行号
      */
     public int getMaxRowNumber() {
+        for (XRow xRow : rows) {
+            int rowNumber = xRow.getMaxRowNumber();
+            if (rowNumber > maxRowNumber) {
+                maxRowNumber = rowNumber;
+            }
+        }
         return maxRowNumber;
     }
 
@@ -73,6 +73,12 @@ public class XHeader {
      * @return 最长单元格索引
      */
     public int getMaxColumnNumber() {
+        for (XRow xRow : rows) {
+            int columnNumber = xRow.getMaxColumnNumber();
+            if (columnNumber > maxColumnNumber) {
+                maxColumnNumber = columnNumber;
+            }
+        }
         return maxColumnNumber;
     }
 

@@ -47,12 +47,6 @@ public class XRow {
                 actuallyAddress = new CellRangeAddress(lastAddress.getFirstRow(), lastAddress.getFirstRow(), lastAddress.getLastColumn() + 1, lastAddress.getLastColumn() + 1);
             }
         }
-        if (actuallyAddress.getLastRow() > maxRowNumber) {
-            maxRowNumber = actuallyAddress.getLastRow();
-        }
-        if (actuallyAddress.getLastColumn() > maxColumnNumber) {
-            maxColumnNumber = actuallyAddress.getLastColumn();
-        }
 
         value.add(Triple.of(name, actuallyAddress, cellStyle));
         fields.add(field);
@@ -220,6 +214,13 @@ public class XRow {
      * @return 最大行号
      */
     public int getMaxRowNumber() {
+        for (String field : fields) {
+            CellRangeAddress cellAddresses = getCellAddresses(field);
+            int rowNumber = cellAddresses.getLastRow();
+            if (rowNumber > maxRowNumber) {
+                maxRowNumber = rowNumber;
+            }
+        }
         return maxRowNumber;
     }
 
@@ -229,6 +230,13 @@ public class XRow {
      * @return 最长单元格列号
      */
     public int getMaxColumnNumber() {
+        for (String field : fields) {
+            CellRangeAddress cellAddresses = getCellAddresses(field);
+            int columnNumber = cellAddresses.getLastColumn();
+            if (columnNumber > maxColumnNumber) {
+                maxColumnNumber = columnNumber;
+            }
+        }
         return maxColumnNumber;
     }
 
