@@ -32,10 +32,6 @@ public class XRow {
      * @return 当前行数据
      */
     public XRow set(String field, String name, CellRangeAddress cellAddresses, XStyle cellStyle) {
-        fields.add(field);
-        if (!field.startsWith("#") && !field.endsWith("#")) {
-            hasFieldMap = true;
-        }
         CellRangeAddress actuallyAddress;
         if (isEmpty()) {
             if (cellAddresses != null) {
@@ -51,13 +47,17 @@ public class XRow {
                 actuallyAddress = new CellRangeAddress(lastAddress.getFirstRow(), lastAddress.getFirstRow(), lastAddress.getLastColumn() + 1, lastAddress.getLastColumn() + 1);
             }
         }
-        value.add(Triple.of(name, actuallyAddress, cellStyle));
-
         if (actuallyAddress.getLastRow() > maxRowNumber) {
             maxRowNumber = actuallyAddress.getLastRow();
         }
         if (actuallyAddress.getLastColumn() > maxColumnNumber) {
             maxColumnNumber = actuallyAddress.getLastColumn();
+        }
+
+        value.add(Triple.of(name, actuallyAddress, cellStyle));
+        fields.add(field);
+        if (!field.startsWith("#") && !field.endsWith("#")) {
+            hasFieldMap = true;
         }
         return this;
     }
