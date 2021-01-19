@@ -38,6 +38,24 @@ public class XSheet {
     }
 
     /**
+     * 创建一个sheet
+     *
+     * @param name   名称
+     * @param data   数据
+     * @param header 单行表头
+     * @return sheet
+     */
+    public static XSheet of(String name, List<DataRow> data, XRow header) {
+        XSheet sheet = new XSheet();
+        sheet.setName(name);
+        sheet.setData(data);
+        XHeader xHeader = new XHeader();
+        xHeader.add(header);
+        sheet.setXHeader(xHeader);
+        return sheet;
+    }
+
+    /**
      * 创建一个sheet<br>
      *
      * @param name 名称
