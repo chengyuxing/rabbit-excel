@@ -208,19 +208,14 @@ public class Tests {
 
     @Test
     public void readTest() throws Exception {
-        String[] names = new String[3];
-        Arrays.fill(names, "");
-        names[0] = "name";
-        names[1] = "age";
-        names[2] = "address";
+        String[] names = new String[]{"name", "age", "address"};
         try (Stream<DataRow> stream = Excels.reader(Paths.get("/Users/chengyuxing/test/datarow2.xlsx"))
-                .sheetAt(1)
-                .namedHeaderAt(0)
-                .fieldMap(names)
+                .sheetAt(1) // 指定读取第几个sheet
+                .namedHeaderAt(0) // 指定表头在哪一行
+                .fieldMap(names)    //翻译表头填充字段
                 .stream()) {
             stream.map(DataRow::toMap)
-                    .forEach(System.out::println)
-            ;
+                    .forEach(System.out::println);
         }
     }
 

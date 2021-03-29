@@ -7,7 +7,7 @@
   <dependency>
       <groupId>com.github.chengyuxing</groupId>
       <artifactId>rabbit-excel</artifactId>
-      <version>3.0.8</version>
+      <version>3.1.0</version>
   </dependency>
   ```
 ## Example
@@ -16,7 +16,12 @@
 
 
 ```java
-try (Stream<DataRow> stream = Excels.reader(Paths.get("D:/test/styleExcel.xlsx")).stream()) {
+String[] names = new String[]{"name", "age", "address"};
+try (Stream<DataRow> stream = Excels.reader(Paths.get("D:/test/test.xlsx"))
+        .sheetAt(1) // 指定读取第几个sheet
+        .namedHeaderAt(0) // 指定表头在哪一行
+        .fieldMap(names)    //翻译表头填充字段
+        .stream()) {
             stream.limit(10)
                     .map(DataRow::toMap)
                     .forEach(System.out::println);
