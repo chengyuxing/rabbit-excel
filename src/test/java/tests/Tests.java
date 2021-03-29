@@ -208,12 +208,16 @@ public class Tests {
 
     @Test
     public void readTest() throws Exception {
-        String[] names = new String[8];
+        String[] names = new String[3];
         Arrays.fill(names, "");
         names[0] = "name";
         names[1] = "age";
-        names[7] = "address";
-        try (Stream<DataRow> stream = Excels.reader(Paths.get("/Users/chengyuxing/Downloads/datarow2.xlsx")).namedHeaderAt(4).fieldMap(names).stream()) {
+        names[2] = "address";
+        try (Stream<DataRow> stream = Excels.reader(Paths.get("/Users/chengyuxing/test/datarow2.xlsx"))
+                .sheetAt(1)
+                .namedHeaderAt(0)
+                .fieldMap(names)
+                .stream()) {
             stream.map(DataRow::toMap)
                     .forEach(System.out::println)
             ;

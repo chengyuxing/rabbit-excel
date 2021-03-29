@@ -91,10 +91,20 @@ public class ExcelReader {
         Sheet sheet = workbook.getSheetAt(sheetIndex);
         UncheckedCloseable close = UncheckedCloseable.wrap(workbook);
         Iterator<Row> iterator = sheet.rowIterator();
+        // skip the no-need rows
         while (headerIndex > 0) {
             if (iterator.hasNext()) {
                 iterator.next();
                 headerIndex--;
+            } else {
+                break;
+            }
+        }
+        boolean isCustomFieldMap = fields != null;
+        // if fields customized, skip the default excel header row.
+        if (isCustomFieldMap) {
+            if (iterator.hasNext()) {
+                iterator.next();
             }
         }
         return StreamSupport.stream(new Spliterators.AbstractSpliterator<DataRow>(Long.MAX_VALUE, Spliterator.ORDERED) {
@@ -108,7 +118,7 @@ public class ExcelReader {
                 Row row = iterator.next();
                 // 此处处理表头只创建一次
                 if (names == null) {
-                    if (fields != null) {
+                    if (isCustomFieldMap) {
                         names = fields;
                     } else {
                         names = createDataHeader(row);
