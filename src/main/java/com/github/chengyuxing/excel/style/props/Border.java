@@ -1,4 +1,4 @@
-package rabbit.excel.style.props;
+package com.github.chengyuxing.excel.style.props;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.IndexedColors;

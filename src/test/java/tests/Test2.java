@@ -2,7 +2,7 @@ package tests;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import rabbit.common.types.DataRow;
+import com.github.chengyuxing.common.types.DataRow;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

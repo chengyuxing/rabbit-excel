@@ -1,8 +1,8 @@
-package rabbit.excel;
+package com.github.chengyuxing.excel;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import rabbit.excel.io.ExcelReader;
-import rabbit.excel.io.ExcelWriter;
+import com.github.chengyuxing.excel.io.ExcelReader;
+import com.github.chengyuxing.excel.io.ExcelWriter;
 
 import java.io.*;
 import java.nio.file.Files;

@@ -1,4 +1,4 @@
-package rabbit.excel.style.props;
+package com.github.chengyuxing.excel.style.props;
 
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;

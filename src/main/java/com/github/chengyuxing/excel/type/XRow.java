@@ -1,8 +1,8 @@
-package rabbit.excel.type;
+package com.github.chengyuxing.excel.type;
 
+import com.github.chengyuxing.excel.style.XStyle;
 import org.apache.poi.ss.util.CellRangeAddress;
-import rabbit.common.tuple.Triple;
-import rabbit.excel.style.XStyle;
+import com.github.chengyuxing.common.tuple.Triple;
 
 import java.util.ArrayList;
 import java.util.List;

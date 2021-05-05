@@ -1,4 +1,4 @@
-package rabbit.excel.type;
+package com.github.chengyuxing.excel.type;
 
 import org.apache.poi.ss.util.CellRangeAddress;
 

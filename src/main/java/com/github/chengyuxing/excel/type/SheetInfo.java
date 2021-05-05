@@ -1,4 +1,4 @@
-package rabbit.excel.type;
+package com.github.chengyuxing.excel.type;
 
 /**
  * 读取到的Sheet元数据

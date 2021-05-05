@@ -1,8 +1,8 @@
-package rabbit.excel.style;
+package com.github.chengyuxing.excel.style;
 
+import com.github.chengyuxing.excel.style.props.Border;
+import com.github.chengyuxing.excel.style.props.FillGround;
 import org.apache.poi.ss.usermodel.CellStyle;
-import rabbit.excel.style.props.FillGround;
-import rabbit.excel.style.props.Border;
 
 import java.util.function.Consumer;
 
