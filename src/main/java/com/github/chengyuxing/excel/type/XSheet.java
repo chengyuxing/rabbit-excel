@@ -1,8 +1,8 @@
 package com.github.chengyuxing.excel.type;
 
+import com.github.chengyuxing.common.DataRow;
+import com.github.chengyuxing.common.TiFunction;
 import com.github.chengyuxing.excel.style.XStyle;
-import com.github.chengyuxing.common.types.DataRow;
-import com.github.chengyuxing.common.types.TiFunction;
 
 import java.util.List;
 
