@@ -1,5 +1,6 @@
 package tests;
 
+import com.github.chengyuxing.common.DataRow;
 import com.healthmarketscience.jackcess.*;
 import com.healthmarketscience.jackcess.Row;
 import com.healthmarketscience.jackcess.Table;
@@ -8,7 +9,6 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import com.github.chengyuxing.common.io.TSVReader;
-import com.github.chengyuxing.common.types.DataRow;
 import com.github.chengyuxing.excel.Excels;
 import com.github.chengyuxing.excel.io.ExcelWriter;
 import com.github.chengyuxing.excel.style.XStyle;
