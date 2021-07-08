@@ -156,18 +156,15 @@ public class ExcelReader {
      * @return 数据行载体
      */
     private DataRow createDataBody(String[] names, Row row) {
-        String[] types = new String[names.length];
         Object[] values = new Object[names.length];
         for (int x = 0, y = names.length; x < y; x++) {
             if (row.getCell(x) != null) {
                 values[x] = getValue(row.getCell(x));
-                types[x] = values[x].getClass().getName();
             } else {
                 values[x] = "";
-                types[x] = "null";
             }
         }
-        return DataRow.of(names, types, values);
+        return DataRow.of(names, values);
     }
 
     /**
