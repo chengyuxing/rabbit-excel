@@ -1,6 +1,7 @@
 package tests;
 
 import com.github.chengyuxing.common.DataRow;
+import com.github.chengyuxing.common.io.LineIO;
 import com.healthmarketscience.jackcess.*;
 import com.healthmarketscience.jackcess.Row;
 import com.healthmarketscience.jackcess.Table;
@@ -8,7 +9,6 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import com.github.chengyuxing.common.io.TSVReader;
 import com.github.chengyuxing.excel.Excels;
 import com.github.chengyuxing.excel.io.ExcelWriter;
 import com.github.chengyuxing.excel.style.XStyle;
@@ -221,10 +221,8 @@ public class Tests {
 
     @Test
     public void tsv() throws Exception {
-        TSVReader tsvReader = TSVReader.of(new FileInputStream("/Users/chengyuxing/Downloads/x.tsv"));
-        try (Stream<DataRow> stream = tsvReader.stream()) {
-            stream//.limit(2)
-                    .map(DataRow::toMap)
+        try (Stream<List<String>> stream = LineIO.readLines(new FileInputStream("/Users/chengyuxing/Downloads/x.tsv"), "\t")) {
+            stream.limit(2)
                     .forEach(System.out::println);
         }
     }
