@@ -47,7 +47,8 @@ public void CloseTest() throws Exception {
 
   ExcelWriter writer = Excels.writer();
 
-  Danger danger = new Danger(writer.createCellStyle());
+  XStyle danger = writer.createStyle();
+  danger.setBorder(new Border(BorderStyle.DOUBLE, IndexedColors.RED));
 
   ISheet xSheet = ISheet.of("sheet100", list.stream().map(DataRow::fromMap).collect(Collectors.toList()));
   xSheet.setEmptyColumn("--");    //填充空单元格
