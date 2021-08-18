@@ -14,7 +14,7 @@ public class XSheet {
     private XHeader xHeader;
     private List<DataRow> data;
     private String emptyColumn = "";
-    private TiFunction<DataRow, String, Integer, XStyle> cellStyle;
+    private TiFunction<DataRow, String, Coord, XStyle> cellStyle;
     private XStyle headerStyle;
 
     XSheet() {
@@ -90,7 +90,7 @@ public class XSheet {
      *
      * @return 表体单元格样式函数
      */
-    public TiFunction<DataRow, String, Integer, XStyle> getCellStyle() {
+    public TiFunction<DataRow, String, Coord, XStyle> getCellStyle() {
         return cellStyle;
     }
 
@@ -102,7 +102,7 @@ public class XSheet {
      *     XStyle danger = writer.createStyle();
      *     danger.setBorder(new Border(BorderStyle.DOUBLE, IndexedColors.RED));
      *     XSheet xSheet = ISheet.of("sheet1", list);
-     *     xSheet.setCellStyle((row, key, index) {@code ->} {
+     *     xSheet.setCellStyle((row, key, coord) {@code ->} {
      *         if (key.equals("c"){@code &&} (double) row.get("c") {@code >} 700) {
      *             return danger;
      *         }
@@ -110,9 +110,9 @@ public class XSheet {
      *     });</pre>
      * </blockquote>
      *
-     * @param cellStyle 单元格样式回调函数 {@code <数据行，列名，列序号>}
+     * @param cellStyle 单元格样式回调函数 {@code <数据行，列名，单元格坐标>}
      */
-    public void setCellStyle(TiFunction<DataRow, String, Integer, XStyle> cellStyle) {
+    public void setCellStyle(TiFunction<DataRow, String, Coord, XStyle> cellStyle) {
         this.cellStyle = cellStyle;
     }
 

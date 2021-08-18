@@ -3,6 +3,7 @@ package com.github.chengyuxing.excel.io;
 import com.github.chengyuxing.common.DataRow;
 import com.github.chengyuxing.common.TiFunction;
 import com.github.chengyuxing.excel.style.XStyle;
+import com.github.chengyuxing.excel.type.Coord;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -182,7 +183,7 @@ public class ExcelWriter implements AutoCloseable {
                     Cell cell = row.createCell(j);
                     Object value = data.get(i).get(fields.get(j));
                     setCellValue(cell, value, xSheet.getEmptyColumn());
-                    setCellStyle(cell, data.get(i), fields.get(j), j, xSheet.getCellStyle());
+                    setCellStyle(cell, data.get(i), fields.get(j), new Coord(i, j), xSheet.getCellStyle());
                 }
             }
         } else {
@@ -218,12 +219,12 @@ public class ExcelWriter implements AutoCloseable {
      * @param cell      单元格
      * @param row       行
      * @param column    字段名
-     * @param index     当前列号
+     * @param coord     当前单元格坐标
      * @param styleFunc 样式回调函数
      */
-    private void setCellStyle(Cell cell, DataRow row, String column, int index, TiFunction<DataRow, String, Integer, XStyle> styleFunc) {
+    private void setCellStyle(Cell cell, DataRow row, String column, Coord coord, TiFunction<DataRow, String, Coord, XStyle> styleFunc) {
         if (styleFunc != null) {
-            XStyle style = styleFunc.apply(row, column, index);
+            XStyle style = styleFunc.apply(row, column, coord);
             if (style != null) {
                 style.init();
                 cell.setCellStyle(style.getStyle());

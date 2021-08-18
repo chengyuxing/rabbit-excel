@@ -195,15 +195,19 @@ public class Tests {
         XSheet xSheet = XSheet.of("sheet100", list.stream().map(DataRow::fromMap).collect(Collectors.toList()), header);
         xSheet.setEmptyColumn("--");    //填充空单元格
         xSheet.setHeaderStyle(bold);
-        xSheet.setCellStyle((row, key, index) -> {
+        xSheet.setCellStyle((row, key, coord) -> {
             //c字段大于700则添加红框
-            if (key.equals("c") && (double) row.get("c") > 700) {
+//            if (key.equals("c") && (double) row.get("c") > 700) {
+//                return danger;
+//            }
+            // 第一行和第五行添加红框
+            if (coord.getX() == 0 || coord.getX() == 5) {
                 return danger;
             }
             return null;
         });
 
-        writer.write(xSheet).saveTo("/Users/chengyuxing/Downloads/data_row");
+        writer.write(xSheet).saveTo("/Users/chengyuxing/Downloads/xxx");
     }
 
     @Test
