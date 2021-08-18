@@ -1,7 +1,7 @@
 package tests;
 
 import com.github.chengyuxing.common.DataRow;
-import com.github.chengyuxing.common.io.LineIO;
+import com.github.chengyuxing.common.io.Lines;
 import com.healthmarketscience.jackcess.*;
 import com.healthmarketscience.jackcess.Row;
 import com.healthmarketscience.jackcess.Table;
@@ -221,7 +221,7 @@ public class Tests {
 
     @Test
     public void tsv() throws Exception {
-        try (Stream<List<String>> stream = LineIO.readLines(new FileInputStream("/Users/chengyuxing/Downloads/x.tsv"), "\t")) {
+        try (Stream<List<String>> stream = Lines.readLines(new FileInputStream("/Users/chengyuxing/Downloads/x.tsv"), "\t")) {
             stream.limit(2)
                     .forEach(System.out::println);
         }
