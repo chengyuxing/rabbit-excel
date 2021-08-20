@@ -85,7 +85,6 @@ public final class Excels {
      */
     public static ExcelWriter bigExcelWriter() {
         SXSSFWorkbook workbook = new SXSSFWorkbook(18);
-        workbook.setCompressTempFiles(true);
         return new ExcelWriter(workbook);
     }
 
@@ -95,6 +94,6 @@ public final class Excels {
      * @return 大型按行Excel写入器
      */
     public static BigExcelLineWriter bigExcelLineWriter() {
-        return new BigExcelLineWriter();
+        return new BigExcelLineWriter(false);
     }
 }
