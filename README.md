@@ -7,7 +7,7 @@
   <dependency>
       <groupId>com.github.chengyuxing</groupId>
       <artifactId>rabbit-excel</artifactId>
-      <version>4.0.4</version>
+      <version>4.0.6</version>
   </dependency>
   ```
 ## Example
@@ -54,8 +54,12 @@ public void CloseTest() throws Exception {
   xSheet.setEmptyColumn("--");    //填充空单元格
   xSheet.setCellStyle((row, key, index) -> {
     //c字段大于700则添加红框
-    if (key.equals("c") && (double) row.get("c") > 700) {
-      return danger;
+    //if (key.equals("c") && (double) row.get("c") > 700) {
+    //  return danger;
+    //}
+    // 第一行和第五行添加红框
+    if (coord.getX() == 0 || coord.getX() == 5) {
+        return danger;
     }
     return null;
   });

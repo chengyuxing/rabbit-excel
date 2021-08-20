@@ -2,21 +2,21 @@ package tests;
 
 import com.github.chengyuxing.common.DataRow;
 import com.github.chengyuxing.common.io.Lines;
-import com.healthmarketscience.jackcess.*;
-import com.healthmarketscience.jackcess.Row;
-import com.healthmarketscience.jackcess.Table;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import com.github.chengyuxing.excel.Excels;
 import com.github.chengyuxing.excel.io.ExcelWriter;
 import com.github.chengyuxing.excel.style.XStyle;
 import com.github.chengyuxing.excel.style.props.Border;
 import com.github.chengyuxing.excel.style.props.FillGround;
-import com.github.chengyuxing.excel.type.XSheet;
 import com.github.chengyuxing.excel.type.XHeader;
 import com.github.chengyuxing.excel.type.XRow;
+import com.github.chengyuxing.excel.type.XSheet;
+import com.healthmarketscience.jackcess.Row;
+import com.healthmarketscience.jackcess.Table;
+import com.healthmarketscience.jackcess.*;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -160,10 +160,13 @@ public class Tests {
     @Test
     public void writeTest() throws Exception {
 
-        ExcelWriter writer = Excels.writer();
+        ExcelWriter writer = Excels.bigExcelWriter();
 
         XStyle danger = writer.createStyle();
         danger.setBorder(new Border(BorderStyle.DOUBLE, IndexedColors.RED));
+
+        XStyle warning = writer.createStyle();
+        warning.setBorder(new Border(BorderStyle.DOUBLE, IndexedColors.GREEN));
 
         XStyle bold = writer.createStyle();
         bold.setStyle(s -> {
@@ -197,17 +200,17 @@ public class Tests {
         xSheet.setHeaderStyle(bold);
         xSheet.setCellStyle((row, key, coord) -> {
             //c字段大于700则添加红框
-//            if (key.equals("c") && (double) row.get("c") > 700) {
-//                return danger;
-//            }
-            // 第一行和第五行添加红框
-            if (coord.getX() == 0 || coord.getX() == 5) {
+            if (key.equals("c") && (double) row.get("c") > 700) {
                 return danger;
+            }
+            // 第一行和第五行添加绿框
+            if (coord.getX() == 0 || coord.getX() == 5) {
+                return warning;
             }
             return null;
         });
 
-        writer.write(xSheet).saveTo("/Users/chengyuxing/Downloads/xxx");
+        writer.write(xSheet).saveTo("/Users/chengyuxing/Downloads/sxxx");
     }
 
     @Test
