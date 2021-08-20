@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import java.util.function.Consumer;
 
 public class XStyle {
+    private boolean built = false;
     private final CellStyle style;
     private FillGround background;
     private FillGround foreground;
@@ -16,7 +17,8 @@ public class XStyle {
         this.style = style;
     }
 
-    public void init() {
+    public void build() {
+        built = true;
         if (border != null) {
             style.setBorderBottom(border.getBorderStyle());
             style.setBorderTop(border.getBorderStyle());
@@ -38,10 +40,14 @@ public class XStyle {
     }
 
     public CellStyle getStyle() {
+        if (!built) {
+            build();
+        }
         return style;
     }
 
     public void setStyle(Consumer<CellStyle> custom) {
+        built = false;
         custom.accept(style);
     }
 
@@ -50,6 +56,7 @@ public class XStyle {
     }
 
     public void setBorder(Border border) {
+        built = false;
         this.border = border;
     }
 
@@ -58,6 +65,7 @@ public class XStyle {
     }
 
     public void setForeground(FillGround foreground) {
+        built = false;
         this.foreground = foreground;
     }
 
@@ -66,6 +74,7 @@ public class XStyle {
     }
 
     public void setBackground(FillGround background) {
+        built = false;
         this.background = background;
     }
 }

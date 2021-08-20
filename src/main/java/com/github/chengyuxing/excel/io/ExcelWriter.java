@@ -2,34 +2,36 @@ package com.github.chengyuxing.excel.io;
 
 import com.github.chengyuxing.common.DataRow;
 import com.github.chengyuxing.common.TiFunction;
+import com.github.chengyuxing.common.io.IOutput;
 import com.github.chengyuxing.excel.style.XStyle;
 import com.github.chengyuxing.excel.type.Coord;
+import com.github.chengyuxing.excel.type.XHeader;
+import com.github.chengyuxing.excel.type.XRow;
+import com.github.chengyuxing.excel.type.XSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.github.chengyuxing.excel.type.XSheet;
-import com.github.chengyuxing.excel.type.XHeader;
-import com.github.chengyuxing.excel.type.XRow;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 /**
  * excel文件生成器
  */
-public class ExcelWriter implements AutoCloseable {
-    public final static Logger log = LoggerFactory.getLogger(ExcelWriter.class);
-    private final Workbook workbook;
-    private final List<XSheet> xSheets = new ArrayList<>();
+public class ExcelWriter implements IOutput, AutoCloseable {
+    private final static Logger log = LoggerFactory.getLogger(ExcelWriter.class);
+    protected final Workbook workbook;
+    protected final List<XSheet> xSheets = new ArrayList<>();
 
     /**
-     * Excel读取类构造函数
+     * 构造函数
      *
-     * @param workbook 工作薄
+     * @param workbook 工作薄类型
      */
     public ExcelWriter(Workbook workbook) {
         this.workbook = workbook;
@@ -79,50 +81,22 @@ public class ExcelWriter implements AutoCloseable {
     }
 
     /**
-     * 获取excel文件字节流
+     * {@inheritDoc}
      *
-     * @return 字节流
+     * @return excel字节数组
      */
-    public byte[] toBytes() {
+    @Override
+    public byte[] toBytes() throws IOException {
         if (xSheets.size() < 1) {
             throw new IllegalStateException("there is nothing to write! don't you invoke method write(...) to add sheet data?");
         }
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try {
-            for (XSheet s : xSheets) {
-                Sheet sheet = workbook.createSheet(s.getName());
-                writeSheet(sheet, s);
-            }
-            workbook.write(out);
-        } catch (IOException e) {
-            log.error("io ex:{}", e.getMessage());
+        for (XSheet s : xSheets) {
+            Sheet sheet = workbook.createSheet(s.getName());
+            writeSheet(sheet, s);
         }
+        workbook.write(out);
         return out.toByteArray();
-    }
-
-    /**
-     * 写Excel到输出流
-     *
-     * @param outputStream 输出流
-     * @param close        是否在完成后关闭输出流
-     * @throws IOException ioEx
-     */
-    public void saveTo(OutputStream outputStream, boolean close) throws IOException {
-        outputStream.write(toBytes());
-        if (close) {
-            outputStream.flush();
-            outputStream.close();
-        }
-    }
-
-    /**
-     * 写Excel到输出流并关闭输出流
-     *
-     * @param outputStream 输出流
-     * @throws IOException ioEx
-     */
-    public void saveTo(OutputStream outputStream) throws IOException {
-        saveTo(outputStream, true);
     }
 
     /**
@@ -131,6 +105,7 @@ public class ExcelWriter implements AutoCloseable {
      * @param path 文件保存路径（后缀可选）
      * @throws IOException ioEx
      */
+    @Override
     public void saveTo(String path) throws IOException {
         String suffix = "";
         if (!path.endsWith(".xlsx") && !path.endsWith(".xls")) {
@@ -143,32 +118,12 @@ public class ExcelWriter implements AutoCloseable {
     }
 
     /**
-     * 保存Excel到文件对象
-     *
-     * @param file 文件对象
-     * @throws IOException ioEx
-     */
-    public void saveTo(File file) throws IOException {
-        saveTo(new FileOutputStream(file));
-    }
-
-    /**
-     * 保存Excel到路径对象
-     *
-     * @param path 路径对象
-     * @throws IOException ioEx
-     */
-    public void saveTo(Path path) throws IOException {
-        saveTo(Files.newOutputStream(path));
-    }
-
-    /**
      * 写入数据到一个Sheet中
      *
      * @param sheet  sheet
      * @param xSheet sheet数据
      */
-    private void writeSheet(Sheet sheet, XSheet xSheet) {
+    void writeSheet(Sheet sheet, XSheet xSheet) {
         XHeader xHeader = xSheet.getXHeader();
         List<DataRow> data = xSheet.getData();
         if (data != null && !data.isEmpty()) {
@@ -189,6 +144,10 @@ public class ExcelWriter implements AutoCloseable {
         } else {
             buildHeaderSpecial(sheet, xHeader, Collections.emptyList(), xSheet.getHeaderStyle());
         }
+        // if big excel writer, do not set column width
+        if (workbook instanceof SXSSFWorkbook) {
+            return;
+        }
         if (xHeader.isEmpty()) {
             if (data != null && !data.isEmpty()) {
                 autoColumnWidth(sheet, data.get(0).size());
@@ -205,7 +164,7 @@ public class ExcelWriter implements AutoCloseable {
      * @param value 值
      * @param other 候选值
      */
-    private void setCellValue(Cell cell, Object value, String other) {
+    void setCellValue(Cell cell, Object value, String other) {
         if (value == null || value.equals("")) {
             cell.setCellValue(other);
         } else {
@@ -222,11 +181,10 @@ public class ExcelWriter implements AutoCloseable {
      * @param coord     当前单元格坐标
      * @param styleFunc 样式回调函数
      */
-    private void setCellStyle(Cell cell, DataRow row, String column, Coord coord, TiFunction<DataRow, String, Coord, XStyle> styleFunc) {
+    void setCellStyle(Cell cell, DataRow row, String column, Coord coord, TiFunction<DataRow, String, Coord, XStyle> styleFunc) {
         if (styleFunc != null) {
             XStyle style = styleFunc.apply(row, column, coord);
             if (style != null) {
-                style.init();
                 cell.setCellStyle(style.getStyle());
             }
         }
@@ -238,7 +196,7 @@ public class ExcelWriter implements AutoCloseable {
      * @param sheet   sheet
      * @param xHeader 表头
      */
-    private void autoColumnWidth(Sheet sheet, XHeader xHeader) {
+    void autoColumnWidth(Sheet sheet, XHeader xHeader) {
         for (XRow xRow : xHeader.getRows()) {
             for (String field : xRow.getFields()) {
                 sheet.autoSizeColumn(xRow.getCellAddresses(field).getFirstColumn());
@@ -252,7 +210,7 @@ public class ExcelWriter implements AutoCloseable {
      * @param sheet       sheet
      * @param columnCount 总列数
      */
-    private void autoColumnWidth(Sheet sheet, int columnCount) {
+    void autoColumnWidth(Sheet sheet, int columnCount) {
         for (int i = 0; i < columnCount; i++) {
             sheet.autoSizeColumn(i);
         }
@@ -266,13 +224,12 @@ public class ExcelWriter implements AutoCloseable {
      * @param xStyle              样式
      * @return 字段集合
      */
-    private List<String> buildHeaderDefault(Sheet sheet, List<String> defaultHeaderFields, XStyle xStyle) {
+    List<String> buildHeaderDefault(Sheet sheet, List<String> defaultHeaderFields, XStyle xStyle) {
         Row headerRow = sheet.createRow(0);
         for (int i = 0; i < defaultHeaderFields.size(); i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(defaultHeaderFields.get(i));
             if (xStyle != null) {
-                xStyle.init();
                 cell.setCellStyle(xStyle.getStyle());
             }
         }
@@ -288,7 +245,7 @@ public class ExcelWriter implements AutoCloseable {
      * @param xStyle              样式
      * @return 字段集合
      */
-    private List<String> buildHeaderSpecial(Sheet sheet, XHeader xHeader, List<String> defaultHeaderFields, XStyle xStyle) {
+    List<String> buildHeaderSpecial(Sheet sheet, XHeader xHeader, List<String> defaultHeaderFields, XStyle xStyle) {
         // just use DataRow's names default
         if (xHeader.isEmpty()) {
             return buildHeaderDefault(sheet, defaultHeaderFields, xStyle);
@@ -344,11 +301,9 @@ public class ExcelWriter implements AutoCloseable {
                 // cell style first
                 XStyle xCellStyle = xRow.getStyle(key);
                 if (xCellStyle != null) {
-                    xCellStyle.init();
                     cellStyle = xCellStyle.getStyle();
                 } else if (xStyle != null) {
                     // row style
-                    xStyle.init();
                     cellStyle = xStyle.getStyle();
                 }
                 cell.setCellStyle(cellStyle);
@@ -360,6 +315,9 @@ public class ExcelWriter implements AutoCloseable {
     @Override
     public void close() throws Exception {
         workbook.close();
+        if (workbook instanceof SXSSFWorkbook) {
+            ((SXSSFWorkbook) workbook).dispose();
+        }
         xSheets.clear();
     }
 }

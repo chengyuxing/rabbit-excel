@@ -1,8 +1,10 @@
 package com.github.chengyuxing.excel;
 
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import com.github.chengyuxing.excel.io.BigExcelLineWriter;
 import com.github.chengyuxing.excel.io.ExcelReader;
 import com.github.chengyuxing.excel.io.ExcelWriter;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -68,11 +70,31 @@ public final class Excels {
     }
 
     /**
-     * 写Excel数据
+     * 获取写Excel写入器
      *
-     * @return Excel写入类
+     * @return Excel写入器
      */
     public static ExcelWriter writer() {
         return new ExcelWriter(new XSSFWorkbook());
+    }
+
+    /**
+     * 获取写大型Excel写入器
+     *
+     * @return 大型Excel写入器
+     */
+    public static ExcelWriter bigExcelWriter() {
+        SXSSFWorkbook workbook = new SXSSFWorkbook(18);
+        workbook.setCompressTempFiles(true);
+        return new ExcelWriter(workbook);
+    }
+
+    /**
+     * 获取按行写大型Excel写入器
+     *
+     * @return 大型按行Excel写入器
+     */
+    public static BigExcelLineWriter bigExcelLineWriter() {
+        return new BigExcelLineWriter();
     }
 }
