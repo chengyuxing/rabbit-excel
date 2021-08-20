@@ -20,6 +20,11 @@ public class BigExcelLineWriter implements IOutput, AutoCloseable {
     private final AtomicInteger rowId = new AtomicInteger(0);
     private final SXSSFWorkbook workbook = new SXSSFWorkbook(1);
 
+    /**
+     * 构造函数
+     *
+     * @param enableGzipTempFiles 启用gzip压缩临时文件
+     */
     public BigExcelLineWriter(boolean enableGzipTempFiles) {
         workbook.setCompressTempFiles(enableGzipTempFiles);
     }
