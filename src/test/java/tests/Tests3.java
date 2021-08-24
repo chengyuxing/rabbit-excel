@@ -1,5 +1,7 @@
 package tests;
 
+import com.github.chengyuxing.excel.Excels;
+import com.github.chengyuxing.excel.io.BigExcelLineWriter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -9,9 +11,27 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
 
 import java.io.FileOutputStream;
+import java.nio.file.Paths;
+import java.util.UUID;
 
 public class Tests3 {
     public static void main(String[] args) throws Exception {
+    }
+
+    @Test
+    public void lineWriter() throws Exception {
+        try (BigExcelLineWriter writer = Excels.bigExcelLineWriter()) {
+            Sheet sheet = writer.createSheet("用户表");
+            writer.writeRow(sheet, "ID", "姓名", "随机数", "UUID");
+            for (int i = 0; i < 150000; i++) {
+                writer.writeRow(sheet, i, "cyx", Math.random() * 1000, UUID.randomUUID());
+            }
+
+            Sheet sheet2 = writer.createSheet("空表");
+            writer.writeRow(sheet2, "年龄", "家庭住址", "成员", "电话");
+
+            writer.saveTo(Paths.get("/Users/chengyuxing/Downloads/big_excel_line_writer.xlsx"));
+        }
     }
 
     @Test

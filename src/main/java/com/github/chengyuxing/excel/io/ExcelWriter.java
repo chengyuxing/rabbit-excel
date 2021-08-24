@@ -12,8 +12,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -24,7 +22,6 @@ import java.util.*;
  * excel文件生成器
  */
 public class ExcelWriter implements IOutput, AutoCloseable {
-    private final static Logger log = LoggerFactory.getLogger(ExcelWriter.class);
     protected final Workbook workbook;
     protected final List<XSheet> xSheets = new ArrayList<>();
 

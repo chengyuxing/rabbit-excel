@@ -9,15 +9,15 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 大型Excel文件行类型数据写入器
  */
 public class BigExcelLineWriter implements IOutput, AutoCloseable {
-    private final AtomicInteger rowId = new AtomicInteger(0);
+    private final ConcurrentHashMap<String, AtomicInteger> sheetRowNumber = new ConcurrentHashMap<>();
     private final SXSSFWorkbook workbook = new SXSSFWorkbook(1);
 
     /**
@@ -36,29 +36,48 @@ public class BigExcelLineWriter implements IOutput, AutoCloseable {
      * @return sheet
      */
     public Sheet createSheet(String name) {
+        if (sheetRowNumber.containsKey(name)) {
+            throw new IllegalStateException("sheet name '" + name + "' already exists.");
+        }
+        sheetRowNumber.put(name, new AtomicInteger(0));
         return workbook.createSheet(name);
     }
 
     /**
      * 写入一行数据到指定Sheet
      *
-     * @param sheet sheet
-     * @param rows  行数据
+     * @param sheet   sheet
+     * @param rowData 行数据
      */
-    public void writeRow(Sheet sheet, Collection<Object> rows) {
-        Row row = sheet.createRow(rowId.getAndIncrement());
-        Iterator<Object> iterator = rows.iterator();
-        int i = 0;
-        while (iterator.hasNext()) {
-            Cell cell = row.createCell(i);
-            Object value = iterator.next();
-            if (value == null) {
-                cell.setCellValue("");
-            } else {
-                cell.setCellValue(value.toString());
+    public void writeRow(Sheet sheet, Collection<Object> rowData) {
+        String sheetName = sheet.getSheetName();
+        if (sheetRowNumber.containsKey(sheetName)) {
+            Row row = sheet.createRow(sheetRowNumber.get(sheetName).getAndIncrement());
+            Iterator<Object> iterator = rowData.iterator();
+            int i = 0;
+            while (iterator.hasNext()) {
+                Cell cell = row.createCell(i);
+                Object value = iterator.next();
+                if (value == null) {
+                    cell.setCellValue("");
+                } else {
+                    cell.setCellValue(value.toString());
+                }
+                i++;
             }
-            i++;
+            return;
         }
+        throw new IllegalStateException("sheet '" + sheetName + "' not exists.");
+    }
+
+    /**
+     * 写入一行数据到指定Sheet
+     *
+     * @param sheet   sheet
+     * @param rowData 行数据
+     */
+    public void writeRow(Sheet sheet, Object... rowData) {
+        writeRow(sheet, Arrays.asList(rowData));
     }
 
     @Override
