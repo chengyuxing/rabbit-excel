@@ -124,7 +124,7 @@ public class ExcelWriter implements IOutput, AutoCloseable {
         XHeader xHeader = xSheet.getXHeader();
         List<DataRow> data = xSheet.getData();
         if (data != null && !data.isEmpty()) {
-            List<String> fields = buildHeaderSpecial(sheet, xHeader, data.get(0).getNames(), xSheet.getHeaderStyle());
+            List<String> fields = buildHeaderSpecial(sheet, xHeader, data.get(0).names(), xSheet.getHeaderStyle());
             int columnCount = xHeader.getMaxColumnNumber() + 1;
             if (xHeader.isEmpty()) {
                 columnCount = data.get(0).size();
