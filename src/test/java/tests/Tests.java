@@ -215,13 +215,13 @@ public class Tests {
 
     @Test
     public void readTest() throws Exception {
-        String[] names = new String[]{"name", "age", "address"};
+        String[] names = new String[]{"name", "age", "address", "1", "2", "3"};
         try (Stream<DataRow> stream = Excels.reader(Paths.get("/Users/chengyuxing/test/datarow2.xlsx"))
                 .sheetAt(1) // 指定读取第几个sheet
-                .namedHeaderAt(0) // 指定表头在哪一行
+//                .namedHeaderAt(0) // 指定表头在哪一行
                 .fieldMap(names)    //翻译表头填充字段
                 .stream()) {
-            stream.map(DataRow::toMap)
+            stream.map(d -> d.removeIf((k, v) -> v == null || v.equals("")))
                     .forEach(System.out::println);
         }
     }

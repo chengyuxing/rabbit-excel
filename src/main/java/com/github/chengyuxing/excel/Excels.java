@@ -9,6 +9,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Excel文件读写操作类
@@ -33,7 +34,7 @@ public final class Excels {
      * @throws IOException ex
      */
     public static ExcelReader reader(String name) throws IOException {
-        return reader(new FileInputStream(name));
+        return reader(Files.newInputStream(Paths.get(name)));
     }
 
     /**
@@ -55,7 +56,7 @@ public final class Excels {
      * @throws IOException ex
      */
     public static ExcelReader reader(File file) throws IOException {
-        return reader(new FileInputStream(file));
+        return reader(Files.newInputStream(file.toPath()));
     }
 
     /**

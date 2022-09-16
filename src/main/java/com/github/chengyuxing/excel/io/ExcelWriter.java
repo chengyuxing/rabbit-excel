@@ -14,8 +14,9 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -111,7 +112,7 @@ public class ExcelWriter implements IOutput, AutoCloseable {
                 suffix = ".xls";
             }
         }
-        saveTo(new FileOutputStream(path + suffix));
+        saveTo(Files.newOutputStream(Paths.get(path + suffix)));
     }
 
     /**
