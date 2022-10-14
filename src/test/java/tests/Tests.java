@@ -221,7 +221,7 @@ public class Tests {
 //                .namedHeaderAt(0) // 指定表头在哪一行
                 .fieldMap(names)    //翻译表头填充字段
                 .stream()) {
-            stream.map(d -> d.removeIf((k, v) -> v == null || v.equals("")))
+            stream.peek(d -> d.removeIf((k, v) -> v == null || v.equals("")))
                     .forEach(System.out::println);
         }
     }
