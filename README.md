@@ -7,7 +7,7 @@
   <dependency>
       <groupId>com.github.chengyuxing</groupId>
       <artifactId>rabbit-excel</artifactId>
-      <version>4.1.7</version>
+      <version>4.1.8</version>
   </dependency>
   ```
 ## Example
