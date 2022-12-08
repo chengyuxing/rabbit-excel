@@ -63,7 +63,8 @@ public class ExcelReader {
     /**
      * 指定列命名表头所在的行号
      *
-     * @param headerIndex 列命名表头所在的行号
+     * @param headerIndex        列命名表头所在的行号
+     * @param skipBlankHeaderCol 跳过为空白或null的表头字段
      * @return Excel
      */
     public ExcelReader namedHeaderAt(int headerIndex, boolean skipBlankHeaderCol) {
@@ -72,6 +73,12 @@ public class ExcelReader {
         return this;
     }
 
+    /**
+     * 指定列命名表头所在的行号
+     *
+     * @param headerIndex 列命名表头所在的行号
+     * @return Excel
+     */
     public ExcelReader namedHeaderAt(int headerIndex) {
         return namedHeaderAt(headerIndex, false);
     }
@@ -109,8 +116,10 @@ public class ExcelReader {
         boolean isCustomFieldMap = fields != null;
         // if fields customized, skip the default excel header row.
         if (isCustomFieldMap) {
-            if (iterator.hasNext()) {
-                iterator.next();
+            if (headerIndex >= 0) {
+                if (iterator.hasNext()) {
+                    iterator.next();
+                }
             }
         }
         return StreamSupport.stream(new Spliterators.AbstractSpliterator<DataRow>(Long.MAX_VALUE, Spliterator.ORDERED) {
