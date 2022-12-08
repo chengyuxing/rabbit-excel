@@ -19,6 +19,7 @@ public class ExcelReader {
     private final Workbook workbook;
     private int sheetIndex = 0;
     private int headerIndex = 0;
+    private boolean skipBlankHeaderCol = true;
     private String[] fields;
 
     /**
@@ -65,9 +66,14 @@ public class ExcelReader {
      * @param headerIndex 列命名表头所在的行号
      * @return Excel
      */
-    public ExcelReader namedHeaderAt(int headerIndex) {
+    public ExcelReader namedHeaderAt(int headerIndex, boolean skipBlankHeaderCol) {
         this.headerIndex = headerIndex;
+        this.skipBlankHeaderCol = skipBlankHeaderCol;
         return this;
+    }
+
+    public ExcelReader namedHeaderAt(int headerIndex) {
+        return namedHeaderAt(headerIndex, false);
     }
 
     /**
@@ -139,8 +145,21 @@ public class ExcelReader {
     private String[] createDataHeader(Row row) {
         String[] names = new String[row.getLastCellNum()];
         for (int i = 0; i < names.length; i++) {
-            if (row.getCell(i) != null) {
-                names[i] = getValue(row.getCell(i)).toString();
+            Cell cell = row.getCell(i);
+            if (skipBlankHeaderCol) {
+                if (cell == null) {
+                    continue;
+                }
+                Object v = getValue(cell);
+                if (v == null) {
+                    continue;
+                }
+                if (v.toString().trim().equals("")) {
+                    continue;
+                }
+            }
+            if (cell != null) {
+                names[i] = getValue(cell).toString();
             } else {
                 names[i] = "#" + i + "#";
             }
