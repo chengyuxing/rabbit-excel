@@ -163,7 +163,7 @@ public class ExcelReader {
                 if (v == null) {
                     continue;
                 }
-                if (v.toString().trim().equals("")) {
+                if (v.toString().trim().isEmpty()) {
                     continue;
                 }
             }

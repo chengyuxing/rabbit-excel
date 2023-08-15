@@ -85,7 +85,7 @@ public class ExcelWriter implements IOutput, AutoCloseable {
      */
     @Override
     public byte[] toBytes() throws IOException {
-        if (xSheets.size() < 1) {
+        if (xSheets.isEmpty()) {
             throw new IllegalStateException("there is nothing to write! don't you invoke method write(...) to add sheet data?");
         }
         ByteArrayOutputStream out = new ByteArrayOutputStream();

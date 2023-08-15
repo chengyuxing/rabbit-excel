@@ -7,9 +7,12 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -93,7 +96,7 @@ public class BigExcelLineWriter implements IOutput, AutoCloseable {
         if (!path.endsWith(".xlsx")) {
             suffix = ".xlsx";
         }
-        saveTo(new FileOutputStream(path + suffix));
+        saveTo(Files.newOutputStream(Paths.get(path + suffix)));
     }
 
     @Override
