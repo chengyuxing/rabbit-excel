@@ -32,7 +32,7 @@ public class Test2 {
     @Test
     public void toMap() {
         List<DataRow> rows = list.stream()
-                .map(DataRow::fromMap)
+                .map(DataRow::ofMap)
                 .collect(Collectors.toList());
         System.out.println(rows.size());
     }

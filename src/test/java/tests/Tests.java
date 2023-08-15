@@ -1,7 +1,6 @@
 package tests;
 
 import com.github.chengyuxing.common.DataRow;
-import com.github.chengyuxing.common.io.Lines;
 import com.github.chengyuxing.excel.Excels;
 import com.github.chengyuxing.excel.io.ExcelWriter;
 import com.github.chengyuxing.excel.style.XStyle;
@@ -134,7 +133,7 @@ public class Tests {
         System.out.println(headers.getRows());
 
         XSheet sheet = XSheet.of("SheetC",
-                list2.stream().map(DataRow::fromMap).collect(Collectors.toList()),
+                list2.stream().map(DataRow::ofMap).collect(Collectors.toList()),
                 headers);
         sheet.setHeaderStyle(seaBlue);
 
@@ -195,7 +194,7 @@ public class Tests {
         header.add(xRow);
         header.add(xRow1);
 
-        XSheet xSheet = XSheet.of("sheet100", list.stream().map(DataRow::fromMap).collect(Collectors.toList()), header);
+        XSheet xSheet = XSheet.of("sheet100", list.stream().map(DataRow::ofMap).collect(Collectors.toList()), header);
         xSheet.setEmptyColumn("--");    //填充空单元格
         xSheet.setHeaderStyle(bold);
         xSheet.setCellStyle((row, key, coord) -> {
@@ -228,9 +227,9 @@ public class Tests {
 
     @Test
     public void tsv() throws Exception {
-        try (Stream<List<String>> stream = Lines.readLines(new FileInputStream("/Users/chengyuxing/Downloads/x.tsv"), "\t")) {
-            stream.limit(2)
-                    .forEach(System.out::println);
-        }
+//        try (Stream<List<String>> stream = Lines.readLines(new FileInputStream("/Users/chengyuxing/Downloads/x.tsv"), "\t")) {
+//            stream.limit(2)
+//                    .forEach(System.out::println);
+//        }
     }
 }
