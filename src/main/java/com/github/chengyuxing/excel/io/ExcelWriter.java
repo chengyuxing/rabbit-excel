@@ -20,46 +20,45 @@ import java.nio.file.Paths;
 import java.util.*;
 
 /**
- * excel文件生成器
+ * Excel file writer.
  */
 public class ExcelWriter implements IOutput, AutoCloseable {
     protected final Workbook workbook;
     protected final List<XSheet> xSheets = new ArrayList<>();
 
     /**
-     * 构造函数
+     * Constructs an ExcelWriter with Workbook.
      *
-     * @param workbook 工作薄类型
+     * @param workbook workbook
      */
     public ExcelWriter(Workbook workbook) {
         this.workbook = workbook;
     }
 
     /**
-     * 创建一个新的空白单元格样式
+     * Create an empty cell style type.
      *
-     * @return 空白单元格样式
-     * @see XStyle
+     * @return empty cell style
      */
     public XStyle createStyle() {
         return new XStyle(workbook.createCellStyle());
     }
 
     /**
-     * 创建一个新的空白字形
+     * Create an empty font.
      *
-     * @return 空白字形
+     * @return empty font
      */
     public Font createFont() {
         return workbook.createFont();
     }
 
     /**
-     * 写入sheet数据
+     * Append more than one sheets ready to save.
      *
-     * @param xSheet sheet数据
-     * @param more   更多的sheet数据
-     * @return Excel写入类
+     * @param xSheet sheet
+     * @param more   more sheet
+     * @return ExcelWriter
      */
     public ExcelWriter write(XSheet xSheet, XSheet... more) {
         xSheets.add(xSheet);
@@ -68,10 +67,10 @@ public class ExcelWriter implements IOutput, AutoCloseable {
     }
 
     /**
-     * 写入sheet数据
+     * Append more than one sheets ready to save.
      *
-     * @param xSheets 一组sheet数据
-     * @return Excel写入类
+     * @param xSheets sheets
+     * @return ExcelWriter
      */
     public ExcelWriter write(Collection<XSheet> xSheets) {
         this.xSheets.addAll(xSheets);
@@ -81,7 +80,7 @@ public class ExcelWriter implements IOutput, AutoCloseable {
     /**
      * {@inheritDoc}
      *
-     * @return excel字节数组
+     * @return excel bytes
      */
     @Override
     public byte[] toBytes() throws IOException {
@@ -98,9 +97,9 @@ public class ExcelWriter implements IOutput, AutoCloseable {
     }
 
     /**
-     * 保存Excel到指定路径下
+     * Save excel data to specify path.
      *
-     * @param path 文件保存路径（后缀可选）
+     * @param path file path (extension is optional)
      * @throws IOException ioEx
      */
     @Override
@@ -116,10 +115,10 @@ public class ExcelWriter implements IOutput, AutoCloseable {
     }
 
     /**
-     * 写入数据到一个Sheet中
+     * Write data to sheet.
      *
      * @param sheet  sheet
-     * @param xSheet sheet数据
+     * @param xSheet sheet data container
      */
     void writeSheet(Sheet sheet, XSheet xSheet) {
         XHeader xHeader = xSheet.getXHeader();
@@ -155,13 +154,6 @@ public class ExcelWriter implements IOutput, AutoCloseable {
         }
     }
 
-    /**
-     * 设置单元格的值
-     *
-     * @param cell  单元格
-     * @param value 值
-     * @param other 候选值
-     */
     void setCellValue(Cell cell, Object value, String other) {
         if (value == null || value.equals("")) {
             cell.setCellValue(other);
@@ -170,15 +162,6 @@ public class ExcelWriter implements IOutput, AutoCloseable {
         }
     }
 
-    /**
-     * 设置单元格样式
-     *
-     * @param cell      单元格
-     * @param row       行
-     * @param column    字段名
-     * @param coord     当前单元格坐标
-     * @param styleFunc 样式回调函数
-     */
     void setCellStyle(Cell cell, DataRow row, String column, Coord coord, TiFunction<DataRow, String, Coord, XStyle> styleFunc) {
         if (styleFunc != null) {
             XStyle style = styleFunc.apply(row, column, coord);
@@ -188,12 +171,6 @@ public class ExcelWriter implements IOutput, AutoCloseable {
         }
     }
 
-    /**
-     * 自动设置复杂表头的宽度
-     *
-     * @param sheet   sheet
-     * @param xHeader 表头
-     */
     void autoColumnWidth(Sheet sheet, XHeader xHeader) {
         for (XRow xRow : xHeader.getRows()) {
             for (String field : xRow.getFields()) {
@@ -202,26 +179,12 @@ public class ExcelWriter implements IOutput, AutoCloseable {
         }
     }
 
-    /**
-     * 自动设置简单表头的宽度
-     *
-     * @param sheet       sheet
-     * @param columnCount 总列数
-     */
     void autoColumnWidth(Sheet sheet, int columnCount) {
         for (int i = 0; i < columnCount; i++) {
             sheet.autoSizeColumn(i);
         }
     }
 
-    /**
-     * 构建默认的简单表头
-     *
-     * @param sheet               sheet
-     * @param defaultHeaderFields 默认的表头字段
-     * @param xStyle              样式
-     * @return 字段集合
-     */
     List<String> buildHeaderDefault(Sheet sheet, List<String> defaultHeaderFields, XStyle xStyle) {
         Row headerRow = sheet.createRow(0);
         for (int i = 0; i < defaultHeaderFields.size(); i++) {
@@ -234,15 +197,6 @@ public class ExcelWriter implements IOutput, AutoCloseable {
         return defaultHeaderFields;
     }
 
-    /**
-     * 构建复杂的表头
-     *
-     * @param sheet               sheet
-     * @param xHeader             表头数据
-     * @param defaultHeaderFields 默认的表头字段
-     * @param xStyle              样式
-     * @return 字段集合
-     */
     List<String> buildHeaderSpecial(Sheet sheet, XHeader xHeader, List<String> defaultHeaderFields, XStyle xStyle) {
         // just use DataRow's names default
         if (xHeader.isEmpty()) {

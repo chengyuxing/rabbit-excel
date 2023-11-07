@@ -7,7 +7,7 @@ import com.github.chengyuxing.excel.style.XStyle;
 import java.util.List;
 
 /**
- * Excel Sheet数据类<br>
+ * Excel Sheet data container.
  */
 public class XSheet {
     private String name;
@@ -21,13 +21,12 @@ public class XSheet {
     }
 
     /**
-     * 创建一个sheet<br>
+     * Returns a sheet data container with initial args.
      *
-     * @param name    名称
-     * @param data    数据
-     * @param xHeader 表头
-     * @return sheet
-     * @see DataRow
+     * @param name    sheet name
+     * @param data    data
+     * @param xHeader header
+     * @return XSheet
      */
     public static XSheet of(String name, List<DataRow> data, XHeader xHeader) {
         XSheet sheet = new XSheet();
@@ -38,12 +37,12 @@ public class XSheet {
     }
 
     /**
-     * 创建一个sheet
+     * Returns a sheet data container with initial args.
      *
-     * @param name   名称
-     * @param data   数据
-     * @param header 单行表头
-     * @return sheet
+     * @param name   sheet name
+     * @param data   data
+     * @param header header
+     * @return XSheet
      */
     public static XSheet of(String name, List<DataRow> data, XRow header) {
         XSheet sheet = new XSheet();
@@ -56,47 +55,31 @@ public class XSheet {
     }
 
     /**
-     * 创建一个sheet<br>
+     * Returns a sheet data container with initial args.
      *
-     * @param name 名称
-     * @param data 数据
-     * @return sheet
-     * @see DataRow
+     * @param name sheet name
+     * @param data data
+     * @return XSheet
      */
     public static XSheet of(String name, List<DataRow> data) {
         return of(name, data, new XHeader());
     }
 
-    /**
-     * 获取表头样式
-     *
-     * @return 表头样式
-     */
     public XStyle getHeaderStyle() {
         return headerStyle;
     }
 
-    /**
-     * 设置表头样式
-     *
-     * @param headerStyle 表头样式
-     */
     public void setHeaderStyle(XStyle headerStyle) {
         this.headerStyle = headerStyle;
     }
 
-    /**
-     * 获取表体单元格样式函数
-     *
-     * @return 表体单元格样式函数
-     */
     public TiFunction<DataRow, String, Coord, XStyle> getCellStyle() {
         return cellStyle;
     }
 
     /**
-     * 设置表体单元格样式函数<br><br>
-     * e.g. c字段大于700则添加红框例子：
+     * Set cell style function.<br>
+     * e.g. set c field mapped cell red border if c field value {@code > } 700:
      * <blockquote>
      * <pre>
      *     XStyle danger = writer.createStyle();
@@ -110,7 +93,7 @@ public class XSheet {
      *     });</pre>
      * </blockquote>
      *
-     * @param cellStyle 单元格样式回调函数 {@code <数据行，列名，单元格坐标>}
+     * @param cellStyle (row, field, coord) {@code ->} style
      */
     public void setCellStyle(TiFunction<DataRow, String, Coord, XStyle> cellStyle) {
         this.cellStyle = cellStyle;

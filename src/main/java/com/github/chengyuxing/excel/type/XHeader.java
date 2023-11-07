@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Excel表头构建类
+ * Excel header builder.
  */
 public class XHeader {
     private final List<XRow> rows = new ArrayList<>();
@@ -14,10 +14,10 @@ public class XHeader {
     private int maxColumnNumber = 0;
 
     /**
-     * 添加一行表头
+     * Add one row.
      *
-     * @param row 行
-     * @return 当前表头
+     * @param row row
+     * @return XHeader
      */
     public XHeader add(XRow row) {
         if (!isEmpty()) {
@@ -43,19 +43,14 @@ public class XHeader {
         return this;
     }
 
-    /**
-     * 判断表头是否空
-     *
-     * @return 是否空
-     */
     public boolean isEmpty() {
         return rows.isEmpty();
     }
 
     /**
-     * 获取整体表头所占的最大行号
+     * Get header max row number.
      *
-     * @return 最大行号
+     * @return max row number
      */
     public int getMaxRowNumber() {
         for (XRow xRow : rows) {
@@ -68,9 +63,9 @@ public class XHeader {
     }
 
     /**
-     * 获取整体表头最长的单元格索引
+     * Get header max column number.
      *
-     * @return 最长单元格索引
+     * @return max column number
      */
     public int getMaxColumnNumber() {
         for (XRow xRow : rows) {
@@ -83,9 +78,9 @@ public class XHeader {
     }
 
     /**
-     * 获取表头数据行
+     * Get header data rows.
      *
-     * @return 表头数据行
+     * @return header data rows
      */
     public List<XRow> getRows() {
         return rows;

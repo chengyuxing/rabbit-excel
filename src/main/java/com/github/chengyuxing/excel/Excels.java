@@ -12,14 +12,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * Excel文件读写操作类
+ * Excel file read/write utils.
  */
 public final class Excels {
     /**
-     * 读Excel
+     * Returns an ExcelReader with InputStream.
      *
-     * @param stream 输入流
-     * @return Excel读取类
+     * @param stream excel file inputStream
+     * @return ExcelReader
      * @throws IOException ex
      */
     public static ExcelReader reader(InputStream stream) throws IOException {
@@ -27,10 +27,10 @@ public final class Excels {
     }
 
     /**
-     * 读Excel
+     * Returns an ExcelReader with full file name.
      *
-     * @param name 文件名
-     * @return Excel读取类
+     * @param name file name
+     * @return ExcelReader
      * @throws IOException ex
      */
     public static ExcelReader reader(String name) throws IOException {
@@ -38,10 +38,10 @@ public final class Excels {
     }
 
     /**
-     * 读Excel
+     * Returns an ExcelReader with Path.
      *
-     * @param path 文件名
-     * @return Excel读取类
+     * @param path file path
+     * @return ExcelReader
      * @throws IOException ex
      */
     public static ExcelReader reader(Path path) throws IOException {
@@ -49,10 +49,10 @@ public final class Excels {
     }
 
     /**
-     * 读Excel
+     * Returns an ExcelReader with File.
      *
-     * @param file 文件对象
-     * @return Excel读取类
+     * @param file file
+     * @return ExcelReader
      * @throws IOException ex
      */
     public static ExcelReader reader(File file) throws IOException {
@@ -60,10 +60,10 @@ public final class Excels {
     }
 
     /**
-     * 读Excel
+     * Returns an ExcelReader with bytes.
      *
-     * @param fileBytes 文件字节
-     * @return Excel读取类
+     * @param fileBytes file bytes
+     * @return ExcelReader
      * @throws IOException ex
      */
     public static ExcelReader reader(byte[] fileBytes) throws IOException {
@@ -71,18 +71,18 @@ public final class Excels {
     }
 
     /**
-     * 获取写Excel写入器
+     * Returns an ExcelWriter.
      *
-     * @return Excel写入器
+     * @return ExcelWriter
      */
     public static ExcelWriter writer() {
         return new ExcelWriter(new XSSFWorkbook());
     }
 
     /**
-     * 获取写大型Excel写入器
+     * Returns a big ExcelWriter.
      *
-     * @return 大型Excel写入器
+     * @return big ExcelWriter
      */
     public static ExcelWriter bigExcelWriter() {
         SXSSFWorkbook workbook = new SXSSFWorkbook(18);
@@ -90,9 +90,9 @@ public final class Excels {
     }
 
     /**
-     * 获取按行写大型Excel写入器
+     * Returns a big Excel line-mode Writer.
      *
-     * @return 大型按行Excel写入器
+     * @return big Excel line-mode Writer
      */
     public static BigExcelLineWriter bigExcelLineWriter() {
         return new BigExcelLineWriter(false);

@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * Excel文件读取器
+ * Excel file reader.
  */
 public class ExcelReader {
     private final Workbook workbook;
@@ -23,19 +23,19 @@ public class ExcelReader {
     private String[] fields;
 
     /**
-     * 构造函数
+     * Constructs an ExcelReader with InputStream.
      *
-     * @param inputStream 输入流
-     * @throws IOException IOex
+     * @param inputStream excel file inputStream
+     * @throws IOException if io error
      */
     public ExcelReader(InputStream inputStream) throws IOException {
         workbook = WorkbookFactory.create(inputStream);
     }
 
     /**
-     * 获取所有Sheet
+     * Get all sheets.
      *
-     * @return list
+     * @return list of sheets
      */
     public List<SheetInfo> getSheets() {
         List<SheetInfo> sheets = new ArrayList<>();
@@ -50,10 +50,10 @@ public class ExcelReader {
     }
 
     /**
-     * 指定读取sheet
+     * Read sheet by index.
      *
-     * @param sheetIndex sheet序号
-     * @return Excel
+     * @param sheetIndex sheet index
+     * @return ExcelReader
      */
     public ExcelReader sheetAt(int sheetIndex) {
         this.sheetIndex = sheetIndex;
@@ -61,11 +61,11 @@ public class ExcelReader {
     }
 
     /**
-     * 指定列命名表头所在的行号
+     * Specify the sheet header line index.
      *
-     * @param headerIndex        列命名表头所在的行号
-     * @param skipBlankHeaderCol 跳过为空白或null的表头字段
-     * @return Excel
+     * @param headerIndex        header index
+     * @param skipBlankHeaderCol skip blank header column or not
+     * @return ExcelReader
      */
     public ExcelReader namedHeaderAt(int headerIndex, boolean skipBlankHeaderCol) {
         this.headerIndex = headerIndex;
@@ -74,20 +74,20 @@ public class ExcelReader {
     }
 
     /**
-     * 指定列命名表头所在的行号
+     * Specify the sheet header line index and auto indexed blank column.
      *
-     * @param headerIndex 列命名表头所在的行号
-     * @return Excel
+     * @param headerIndex header index
+     * @return ExcelReader
      */
     public ExcelReader namedHeaderAt(int headerIndex) {
         return namedHeaderAt(headerIndex, false);
     }
 
     /**
-     * 自定义字段列映射，顺序和excel列保持一致，长度一致
+     * Specify the custom fields map to excel columns.
      *
-     * @param fields 字段集合
-     * @return Excel
+     * @param fields fields
+     * @return ExcelReader
      */
     public ExcelReader fieldMap(String[] fields) {
         this.fields = fields;
@@ -95,10 +95,10 @@ public class ExcelReader {
     }
 
     /**
-     * 惰性读取Excel装载为流，只有调用终端操作和短路操作才会真正开始执行<br>
-     * 使用{@code try-with-resource}进行包裹，结束后将自动关闭输入流：
+     * Lazy read excel to stream.<br>
+     * Use {@code try-with-resource} wrap to auto close the stream while read to end.
      *
-     * @return 行数据流
+     * @return data stream
      */
     public Stream<DataRow> stream() {
         Sheet sheet = workbook.getSheetAt(sheetIndex);
@@ -131,7 +131,6 @@ public class ExcelReader {
                     return false;
                 }
                 Row row = iterator.next();
-                // 此处处理表头只创建一次
                 if (names == null) {
                     if (isCustomFieldMap) {
                         names = fields;
@@ -146,10 +145,10 @@ public class ExcelReader {
     }
 
     /**
-     * 创建数据表头，默认以第一行数据为表头
+     * Create data header by row.
      *
-     * @param row 数据行
-     * @return 一组表头
+     * @param row sheet row
+     * @return header columns
      */
     private String[] createDataHeader(Row row) {
         String[] names = new String[row.getLastCellNum()];
@@ -177,11 +176,11 @@ public class ExcelReader {
     }
 
     /**
-     * 创建行数据内容载体
+     * Create data body.
      *
-     * @param names 表头名
-     * @param row   数据行
-     * @return 数据行载体
+     * @param names header columns
+     * @param row   row data
+     * @return 1 row of data
      */
     private DataRow createDataBody(String[] names, Row row) {
         Object[] values = new Object[names.length];
@@ -196,10 +195,10 @@ public class ExcelReader {
     }
 
     /**
-     * 获取单元格的值
+     * Get cell value.
      *
-     * @param cell 单元格
-     * @return 值
+     * @param cell cell
+     * @return value
      */
     private Object getValue(Cell cell) {
         switch (cell.getCellType()) {

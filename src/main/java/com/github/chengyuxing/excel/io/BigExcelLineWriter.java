@@ -17,25 +17,25 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 大型Excel文件行类型数据写入器
+ * Big Excel file line-mode data writer.
  */
 public class BigExcelLineWriter implements IOutput, AutoCloseable {
     private final ConcurrentHashMap<String, AtomicInteger> sheetRowNumber = new ConcurrentHashMap<>();
     private final SXSSFWorkbook workbook = new SXSSFWorkbook(1);
 
     /**
-     * 构造函数
+     * Constructs a BigExcelLineWriter with enableGzipTempFiles flag.
      *
-     * @param enableGzipTempFiles 启用gzip压缩临时文件
+     * @param enableGzipTempFiles enable gzip
      */
     public BigExcelLineWriter(boolean enableGzipTempFiles) {
         workbook.setCompressTempFiles(enableGzipTempFiles);
     }
 
     /**
-     * 创建一个sheet
+     * Create a sheet.
      *
-     * @param name sheet名称
+     * @param name sheet name
      * @return sheet
      */
     public Sheet createSheet(String name) {
@@ -47,10 +47,10 @@ public class BigExcelLineWriter implements IOutput, AutoCloseable {
     }
 
     /**
-     * 写入一行数据到指定Sheet
+     * Write 1 row data into sheet.
      *
      * @param sheet   sheet
-     * @param rowData 行数据
+     * @param rowData row data
      */
     public void writeRow(Sheet sheet, Collection<Object> rowData) {
         String sheetName = sheet.getSheetName();
@@ -74,10 +74,10 @@ public class BigExcelLineWriter implements IOutput, AutoCloseable {
     }
 
     /**
-     * 写入一行数据到指定Sheet
+     * Write 1 row data into sheet.
      *
      * @param sheet   sheet
-     * @param rowData 行数据
+     * @param rowData row data
      */
     public void writeRow(Sheet sheet, Object... rowData) {
         writeRow(sheet, Arrays.asList(rowData));

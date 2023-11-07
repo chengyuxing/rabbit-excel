@@ -1,7 +1,7 @@
 package com.github.chengyuxing.excel.type;
 
 /**
- * 读取到的Sheet元数据
+ * Sheet info metadata.
  */
 public class SheetInfo {
     private final int index;
