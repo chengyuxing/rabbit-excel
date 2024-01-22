@@ -132,12 +132,12 @@ public class Tests {
 
         System.out.println(headers.getRows());
 
-        XSheet sheet = XSheet.of("SheetC",
-                list2.stream().map(DataRow::ofMap).collect(Collectors.toList()),
-                headers);
-        sheet.setHeaderStyle(seaBlue);
-
-        writer.write(sheet).saveTo("/Users/chengyuxing/Downloads/datarow2");
+//        XSheet sheet = XSheet.of("SheetC",
+//                list2.stream().map(DataRow::ofMap).collect(Collectors.toList()),
+//                headers);
+//        sheet.setHeaderStyle(seaBlue);
+//
+//        writer.write(sheet).saveTo("/Users/chengyuxing/Downloads/datarow2");
     }
 
     static final List<Map<String, Object>> list = new ArrayList<>();
@@ -194,22 +194,22 @@ public class Tests {
         header.add(xRow);
         header.add(xRow1);
 
-        XSheet xSheet = XSheet.of("sheet100", list.stream().map(DataRow::ofMap).collect(Collectors.toList()), header);
-        xSheet.setEmptyColumn("--");    //填充空单元格
-        xSheet.setHeaderStyle(bold);
-        xSheet.setCellStyle((row, key, coord) -> {
-            //c字段大于700则添加红框
-            if (key.equals("c") && (double) row.get("c") > 700) {
-                return danger;
-            }
-            // 第一行和第五行添加绿框
-            if (coord.getX() == 0 || coord.getX() == 5) {
-                return warning;
-            }
-            return null;
-        });
-
-        writer.write(xSheet).saveTo("/Users/chengyuxing/Downloads/sxxx");
+//        XSheet xSheet = XSheet.of("sheet100", list.stream().map(DataRow::ofMap).collect(Collectors.toList()), header);
+//        xSheet.setEmptyColumn("--");    //填充空单元格
+//        xSheet.setHeaderStyle(bold);
+//        xSheet.setCellStyle((row, key, coord) -> {
+//            c字段大于700则添加红框
+//            if (key.equals("c") && (double) row.get("c") > 700) {
+//                return danger;
+//            }
+//             第一行和第五行添加绿框
+//            if (coord.getX() == 0 || coord.getX() == 5) {
+//                return warning;
+//            }
+//            return null;
+//        });
+//
+//        writer.write(xSheet).saveTo("/Users/chengyuxing/Downloads/sxxx");
     }
 
     @Test
