@@ -73,6 +73,10 @@ public class XSheet {
         return this;
     }
 
+    public void setColumnWidths(Map<String, Integer> columnWidths) {
+        this.columnWidths.putAll(columnWidths);
+    }
+
     public XStyle getHeaderStyle() {
         return headerStyle;
     }
@@ -137,5 +141,9 @@ public class XSheet {
 
     public Map<String, Integer> getColumnWidths() {
         return columnWidths;
+    }
+
+    public void setEmptyColumn(String emptyColumn) {
+        this.emptyColumn = emptyColumn;
     }
 }
