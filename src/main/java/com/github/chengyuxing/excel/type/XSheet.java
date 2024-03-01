@@ -4,7 +4,9 @@ import com.github.chengyuxing.common.DataRow;
 import com.github.chengyuxing.common.TiFunction;
 import com.github.chengyuxing.excel.style.XStyle;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Excel Sheet data container.
@@ -14,6 +16,7 @@ public class XSheet {
     private XHeader xHeader;
     private List<DataRow> data;
     private String emptyColumn = "";
+    private final Map<String, Integer> columnWidths = new HashMap<>();
     private TiFunction<DataRow, String, Coord, XStyle> cellStyle;
     private XStyle headerStyle;
 
@@ -63,6 +66,11 @@ public class XSheet {
      */
     public static XSheet of(String name, List<DataRow> data) {
         return of(name, data, new XHeader());
+    }
+
+    public XSheet columnWidth(String field, Integer width) {
+        this.columnWidths.put(field, width);
+        return this;
     }
 
     public XStyle getHeaderStyle() {
@@ -127,7 +135,7 @@ public class XSheet {
         return emptyColumn;
     }
 
-    public void setEmptyColumn(String emptyColumn) {
-        this.emptyColumn = emptyColumn;
+    public Map<String, Integer> getColumnWidths() {
+        return columnWidths;
     }
 }

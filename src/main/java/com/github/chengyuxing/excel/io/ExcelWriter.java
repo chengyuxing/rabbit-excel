@@ -120,7 +120,7 @@ public class ExcelWriter implements IOutput, AutoCloseable {
      * @param sheet  sheet
      * @param xSheet sheet data container
      */
-    void writeSheet(Sheet sheet, XSheet xSheet) {
+    protected void writeSheet(Sheet sheet, XSheet xSheet) {
         XHeader xHeader = xSheet.getXHeader();
         List<DataRow> data = xSheet.getData();
         if (data != null && !data.isEmpty()) {
@@ -152,9 +152,10 @@ public class ExcelWriter implements IOutput, AutoCloseable {
         } else {
             autoColumnWidth(sheet, xHeader);
         }
+        manualColumnWidth(sheet, xSheet);
     }
 
-    void setCellValue(Cell cell, Object value, String other) {
+    protected void setCellValue(Cell cell, Object value, String other) {
         if (value == null || value.equals("")) {
             cell.setCellValue(other);
         } else {
@@ -162,7 +163,7 @@ public class ExcelWriter implements IOutput, AutoCloseable {
         }
     }
 
-    void setCellStyle(Cell cell, DataRow row, String column, Coord coord, TiFunction<DataRow, String, Coord, XStyle> styleFunc) {
+    protected void setCellStyle(Cell cell, DataRow row, String column, Coord coord, TiFunction<DataRow, String, Coord, XStyle> styleFunc) {
         if (styleFunc != null) {
             XStyle style = styleFunc.apply(row, column, coord);
             if (style != null) {
@@ -171,7 +172,24 @@ public class ExcelWriter implements IOutput, AutoCloseable {
         }
     }
 
-    void autoColumnWidth(Sheet sheet, XHeader xHeader) {
+    protected void manualColumnWidth(Sheet sheet, XSheet xSheet) {
+        XHeader xHeader = xSheet.getXHeader();
+        Map<String, Integer> widths = xSheet.getColumnWidths();
+        if (widths.isEmpty()) {
+            return;
+        }
+        for (XRow xRow : xHeader.getRows()) {
+            for (String field : xRow.getFields()) {
+                if (widths.containsKey(field)) {
+                    int idx = xRow.getCellAddresses(field).getFirstColumn();
+                    int width = widths.get(field);
+                    sheet.setColumnWidth(idx, width);
+                }
+            }
+        }
+    }
+
+    protected void autoColumnWidth(Sheet sheet, XHeader xHeader) {
         for (XRow xRow : xHeader.getRows()) {
             for (String field : xRow.getFields()) {
                 sheet.autoSizeColumn(xRow.getCellAddresses(field).getFirstColumn());
@@ -179,13 +197,13 @@ public class ExcelWriter implements IOutput, AutoCloseable {
         }
     }
 
-    void autoColumnWidth(Sheet sheet, int columnCount) {
+    protected void autoColumnWidth(Sheet sheet, int columnCount) {
         for (int i = 0; i < columnCount; i++) {
             sheet.autoSizeColumn(i);
         }
     }
 
-    List<String> buildHeaderDefault(Sheet sheet, List<String> defaultHeaderFields, XStyle xStyle) {
+    protected List<String> buildHeaderDefault(Sheet sheet, List<String> defaultHeaderFields, XStyle xStyle) {
         Row headerRow = sheet.createRow(0);
         for (int i = 0; i < defaultHeaderFields.size(); i++) {
             Cell cell = headerRow.createCell(i);
@@ -197,7 +215,7 @@ public class ExcelWriter implements IOutput, AutoCloseable {
         return defaultHeaderFields;
     }
 
-    List<String> buildHeaderSpecial(Sheet sheet, XHeader xHeader, List<String> defaultHeaderFields, XStyle xStyle) {
+    protected List<String> buildHeaderSpecial(Sheet sheet, XHeader xHeader, List<String> defaultHeaderFields, XStyle xStyle) {
         // just use DataRow's names default
         if (xHeader.isEmpty()) {
             return buildHeaderDefault(sheet, defaultHeaderFields, xStyle);
