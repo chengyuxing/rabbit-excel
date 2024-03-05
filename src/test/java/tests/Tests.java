@@ -6,6 +6,7 @@ import com.github.chengyuxing.excel.io.ExcelWriter;
 import com.github.chengyuxing.excel.style.XStyle;
 import com.github.chengyuxing.excel.style.props.Border;
 import com.github.chengyuxing.excel.style.props.FillGround;
+import com.github.chengyuxing.excel.type.CellAttr;
 import com.github.chengyuxing.excel.type.XHeader;
 import com.github.chengyuxing.excel.type.XRow;
 import com.github.chengyuxing.excel.type.XSheet;
@@ -18,7 +19,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -226,10 +226,32 @@ public class Tests {
     }
 
     @Test
-    public void tsv() throws Exception {
-//        try (Stream<List<String>> stream = Lines.readLines(new FileInputStream("/Users/chengyuxing/Downloads/x.tsv"), "\t")) {
-//            stream.limit(2)
-//                    .forEach(System.out::println);
-//        }
+    public void mc() throws Exception {
+        try (ExcelWriter writer = Excels.writer()) {
+            List<DataRow> rows = Stream.iterate(0, i -> i + 1)
+                    .limit(100)
+                    .map(i -> DataRow.of("id", i, "name", "cyx_" + i, "address", "昆明市" + i))
+                    .collect(Collectors.toList());
+            XSheet sheet = XSheet.of("sheet1", rows);
+
+            XStyle center = writer.createStyle();
+            center.setStyle(s -> {
+                s.setAlignment(HorizontalAlignment.CENTER);
+                s.setVerticalAlignment(VerticalAlignment.CENTER);
+
+            });
+            center.setBorder(new Border(BorderStyle.DOUBLE, IndexedColors.GREEN));
+
+            sheet.setCellAttr((d, f, c) -> {
+                CellAttr attr = new CellAttr();
+                if (f.equals("id") && Objects.equals(14, d.get("id"))) {
+                    int start = c.getX() + 1;
+                    attr.setCellRangeAddress(new CellRangeAddress(start, start + 5, 0, 2));
+                    attr.setCellStyle(center);
+                }
+                return attr;
+            });
+            writer.write(sheet).saveTo(Paths.get("/Users/chengyuxing/Downloads/a.xlsx"));
+        }
     }
 }

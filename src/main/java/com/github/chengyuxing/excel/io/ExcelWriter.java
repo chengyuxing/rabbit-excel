@@ -4,10 +4,7 @@ import com.github.chengyuxing.common.DataRow;
 import com.github.chengyuxing.common.TiFunction;
 import com.github.chengyuxing.common.io.IOutput;
 import com.github.chengyuxing.excel.style.XStyle;
-import com.github.chengyuxing.excel.type.Coord;
-import com.github.chengyuxing.excel.type.XHeader;
-import com.github.chengyuxing.excel.type.XRow;
-import com.github.chengyuxing.excel.type.XSheet;
+import com.github.chengyuxing.excel.type.*;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -131,11 +128,27 @@ public class ExcelWriter implements IOutput, AutoCloseable {
             }
             for (int i = 0; i < data.size(); i++) {
                 Row row = sheet.createRow(xHeader.getMaxRowNumber() + 1 + i);
+                DataRow item = data.get(i);
                 for (int j = 0; j < columnCount; j++) {
                     Cell cell = row.createCell(j);
-                    Object value = data.get(i).get(fields.get(j));
+                    String field = fields.get(j);
+                    Object value = item.get(field);
                     setCellValue(cell, value, xSheet.getEmptyColumn());
-                    setCellStyle(cell, data.get(i), fields.get(j), new Coord(i, j), xSheet.getCellStyle());
+
+                    TiFunction<DataRow, String, Coord, CellAttr> caFn = xSheet.getCellAttr();
+                    if (Objects.nonNull(caFn)) {
+                        CellAttr attr = caFn.apply(item, field, new Coord(i, j));
+                        if (Objects.nonNull(attr)) {
+                            CellRangeAddress address = attr.getCellRangeAddress();
+                            if (Objects.nonNull(address)) {
+                                sheet.addMergedRegion(address);
+                            }
+                            XStyle style = attr.getCellStyle();
+                            if (Objects.nonNull(style)) {
+                                cell.setCellStyle(style.getStyle());
+                            }
+                        }
+                    }
                 }
             }
         } else {
@@ -163,29 +176,23 @@ public class ExcelWriter implements IOutput, AutoCloseable {
         }
     }
 
-    protected void setCellStyle(Cell cell, DataRow row, String column, Coord coord, TiFunction<DataRow, String, Coord, XStyle> styleFunc) {
-        if (styleFunc != null) {
-            XStyle style = styleFunc.apply(row, column, coord);
-            if (style != null) {
-                cell.setCellStyle(style.getStyle());
-            }
-        }
-    }
-
     protected void manualColumnWidth(Sheet sheet, XSheet xSheet) {
         XHeader xHeader = xSheet.getXHeader();
-        Map<String, Integer> widths = xSheet.getColumnWidths();
-        if (widths.isEmpty()) {
-            return;
-        }
-        for (XRow xRow : xHeader.getRows()) {
-            for (String field : xRow.getFields()) {
-                if (widths.containsKey(field)) {
-                    int idx = xRow.getCellAddresses(field).getFirstColumn();
-                    int width = widths.get(field);
-                    sheet.setColumnWidth(idx, width);
+        Map<String, Integer> fieldWidths = xSheet.getFieldColumnWidths();
+        Map<Integer, Integer> indexWidths = xSheet.getIndexColumnWidths();
+        if (!fieldWidths.isEmpty()) {
+            for (XRow xRow : xHeader.getRows()) {
+                for (String field : xRow.getFields()) {
+                    if (fieldWidths.containsKey(field)) {
+                        int idx = xRow.getCellAddresses(field).getFirstColumn();
+                        int width = fieldWidths.get(field);
+                        sheet.setColumnWidth(idx, width);
+                    }
                 }
             }
+        }
+        if (!indexWidths.isEmpty()) {
+            indexWidths.forEach(sheet::setColumnWidth);
         }
     }
 

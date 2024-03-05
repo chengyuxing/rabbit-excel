@@ -16,8 +16,9 @@ public class XSheet {
     private XHeader xHeader;
     private List<DataRow> data;
     private String emptyColumn = "";
-    private final Map<String, Integer> columnWidths = new HashMap<>();
-    private TiFunction<DataRow, String, Coord, XStyle> cellStyle;
+    private final Map<String, Integer> fieldColumnWidths = new HashMap<>();
+    private final Map<Integer, Integer> indexColumnWidths = new HashMap<>();
+    private TiFunction<DataRow, String, Coord, CellAttr> cellAttr;
     private XStyle headerStyle;
 
     XSheet() {
@@ -68,13 +69,22 @@ public class XSheet {
         return of(name, data, new XHeader());
     }
 
-    public XSheet columnWidth(String field, Integer width) {
-        this.columnWidths.put(field, width);
+    public XSheet columnWidth(String field, int width) {
+        this.fieldColumnWidths.put(field, width);
         return this;
     }
 
-    public void setColumnWidths(Map<String, Integer> columnWidths) {
-        this.columnWidths.putAll(columnWidths);
+    public XSheet columnWidth(int index, int width) {
+        this.indexColumnWidths.put(index, width);
+        return this;
+    }
+
+    public void setFieldColumnWidths(Map<String, Integer> columnWidths) {
+        this.fieldColumnWidths.putAll(columnWidths);
+    }
+
+    public void setIndexColumnWidths(Map<Integer, Integer> columnWidths) {
+        this.indexColumnWidths.putAll(columnWidths);
     }
 
     public XStyle getHeaderStyle() {
@@ -83,32 +93,6 @@ public class XSheet {
 
     public void setHeaderStyle(XStyle headerStyle) {
         this.headerStyle = headerStyle;
-    }
-
-    public TiFunction<DataRow, String, Coord, XStyle> getCellStyle() {
-        return cellStyle;
-    }
-
-    /**
-     * Set cell style function.<br>
-     * e.g. set c field mapped cell red border if c field value {@code > } 700:
-     * <blockquote>
-     * <pre>
-     *     XStyle danger = writer.createStyle();
-     *     danger.setBorder(new Border(BorderStyle.DOUBLE, IndexedColors.RED));
-     *     XSheet xSheet = ISheet.of("sheet1", list);
-     *     xSheet.setCellStyle((row, key, coord) {@code ->} {
-     *         if (key.equals("c"){@code &&} (double) row.get("c") {@code >} 700) {
-     *             return danger;
-     *         }
-     *         return null;
-     *     });</pre>
-     * </blockquote>
-     *
-     * @param cellStyle (row, field, coord) {@code ->} style
-     */
-    public void setCellStyle(TiFunction<DataRow, String, Coord, XStyle> cellStyle) {
-        this.cellStyle = cellStyle;
     }
 
     public List<DataRow> getData() {
@@ -139,11 +123,23 @@ public class XSheet {
         return emptyColumn;
     }
 
-    public Map<String, Integer> getColumnWidths() {
-        return columnWidths;
+    public Map<String, Integer> getFieldColumnWidths() {
+        return fieldColumnWidths;
+    }
+
+    public Map<Integer, Integer> getIndexColumnWidths() {
+        return indexColumnWidths;
     }
 
     public void setEmptyColumn(String emptyColumn) {
         this.emptyColumn = emptyColumn;
+    }
+
+    public TiFunction<DataRow, String, Coord, CellAttr> getCellAttr() {
+        return cellAttr;
+    }
+
+    public void setCellAttr(TiFunction<DataRow, String, Coord, CellAttr> cellAttr) {
+        this.cellAttr = cellAttr;
     }
 }
