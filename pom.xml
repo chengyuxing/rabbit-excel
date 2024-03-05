@@ -6,7 +6,7 @@
     <description>Excel file read/write util.</description>
     <groupId>com.github.chengyuxing</groupId>
     <artifactId>rabbit-excel</artifactId>
-    <version>4.3.3</version>
+    <version>4.3.4</version>
     <packaging>jar</packaging>
     <name>rabbit-excel</name>
     <url>https://github.com/chengyuxing/rabbit-excel</url>
