@@ -8,7 +8,7 @@
   <dependency>
       <groupId>com.github.chengyuxing</groupId>
       <artifactId>rabbit-excel</artifactId>
-      <version>4.3.31</version>
+      <version>4.3.32</version>
   </dependency>
   ```
 
