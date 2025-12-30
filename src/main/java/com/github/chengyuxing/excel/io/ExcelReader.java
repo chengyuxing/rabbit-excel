@@ -2,8 +2,10 @@ package com.github.chengyuxing.excel.io;
 
 import com.github.chengyuxing.common.DataRow;
 import com.github.chengyuxing.common.UncheckedCloseable;
+import com.github.chengyuxing.common.utils.StringUtil;
 import org.apache.poi.ss.usermodel.*;
 import com.github.chengyuxing.excel.type.SheetInfo;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +39,7 @@ public class ExcelReader {
      *
      * @return list of sheets
      */
-    public List<SheetInfo> getSheets() {
+    public @Unmodifiable List<SheetInfo> getSheets() {
         List<SheetInfo> sheets = new ArrayList<>();
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             Sheet sheet = workbook.getSheetAt(i);
@@ -150,29 +152,24 @@ public class ExcelReader {
      * @param row sheet row
      * @return header columns
      */
-    private String[] createDataHeader(Row row) {
-        String[] names = new String[row.getLastCellNum()];
-        for (int i = 0; i < names.length; i++) {
+    protected String[] createDataHeader(Row row) {
+        List<String> names = new ArrayList<>();
+        for (int i = 0, j = row.getLastCellNum(); i < j; i++) {
             Cell cell = row.getCell(i);
             if (skipBlankHeaderCol) {
-                if (cell == null) {
-                    continue;
-                }
-                Object v = getValue(cell);
-                if (v == null) {
-                    continue;
-                }
-                if (v.toString().trim().isEmpty()) {
+                if (cell == null || cell.toString().trim().isEmpty()) {
                     continue;
                 }
             }
-            if (cell != null) {
-                names[i] = getValue(cell).toString();
+            String name;
+            if (cell != null && !StringUtil.isEmpty(cell.toString())) {
+                name = cell.toString().replace("#", "");
             } else {
-                names[i] = "#" + i + "#";
+                name = "#" + i + "#";
             }
+            names.add(name);
         }
-        return names;
+        return names.toArray(new String[0]);
     }
 
     /**
@@ -182,7 +179,7 @@ public class ExcelReader {
      * @param row   row data
      * @return 1 row of data
      */
-    private DataRow createDataBody(String[] names, Row row) {
+    protected DataRow createDataBody(String[] names, Row row) {
         Object[] values = new Object[names.length];
         for (int x = 0, y = names.length; x < y; x++) {
             if (row.getCell(x) != null) {
@@ -200,7 +197,7 @@ public class ExcelReader {
      * @param cell cell
      * @return value
      */
-    private Object getValue(Cell cell) {
+    protected Object getValue(Cell cell) {
         switch (cell.getCellType()) {
             case STRING:
                 return cell.getStringCellValue();
@@ -210,7 +207,7 @@ public class ExcelReader {
                 if (DateUtil.isCellDateFormatted(cell)) {
                     return cell.getDateCellValue();
                 }
-                return (long) cell.getNumericCellValue();
+                return cell.getNumericCellValue();
             case FORMULA:
                 return cell.getCellFormula();
             default:
