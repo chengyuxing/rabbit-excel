@@ -136,15 +136,15 @@ public class ExcelWriter implements IOutput, AutoCloseable {
                     setCellValue(cell, value, xSheet.getEmptyColumn());
 
                     TiFunction<DataRow, String, Coord, CellAttr> caFn = xSheet.getCellAttr();
-                    if (Objects.nonNull(caFn)) {
+                    if (caFn != null) {
                         CellAttr attr = caFn.apply(item, field, new Coord(i, j));
-                        if (Objects.nonNull(attr)) {
+                        if (attr != null) {
                             CellRangeAddress address = attr.getCellRangeAddress();
-                            if (Objects.nonNull(address)) {
+                            if (address != null) {
                                 sheet.addMergedRegion(address);
                             }
                             XStyle style = attr.getCellStyle();
-                            if (Objects.nonNull(style)) {
+                            if (style != null) {
                                 cell.setCellStyle(style.getStyle());
                             }
                         }
