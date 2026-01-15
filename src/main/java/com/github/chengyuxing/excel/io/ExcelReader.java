@@ -2,7 +2,7 @@ package com.github.chengyuxing.excel.io;
 
 import com.github.chengyuxing.common.DataRow;
 import com.github.chengyuxing.common.UncheckedCloseable;
-import com.github.chengyuxing.common.utils.StringUtil;
+import com.github.chengyuxing.common.util.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import com.github.chengyuxing.excel.type.SheetInfo;
 import org.jetbrains.annotations.Unmodifiable;
@@ -162,7 +162,7 @@ public class ExcelReader {
                 }
             }
             String name;
-            if (cell != null && !StringUtil.isEmpty(cell.toString())) {
+            if (cell != null && !StringUtils.isEmpty(cell.toString())) {
                 name = cell.toString().replace("#", "");
             } else {
                 name = "#" + i + "#";
