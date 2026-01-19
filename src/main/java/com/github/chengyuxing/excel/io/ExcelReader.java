@@ -157,7 +157,7 @@ public class ExcelReader {
         for (int i = 0, j = row.getLastCellNum(); i < j; i++) {
             Cell cell = row.getCell(i);
             if (skipBlankHeaderCol) {
-                if (cell == null || cell.toString().trim().isEmpty()) {
+                if (cell == null || StringUtils.isBlank(cell.toString())) {
                     continue;
                 }
             }
