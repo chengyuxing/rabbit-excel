@@ -251,7 +251,7 @@ public class Tests {
                 }
                 return attr;
             });
-            writer.write(sheet).saveTo(Paths.get("/Users/chengyuxing/Downloads/a.xlsx"));
+            writer.write(sheet).writeTo(Paths.get("/Users/chengyuxing/Downloads/a.xlsx"));
         }
     }
 }

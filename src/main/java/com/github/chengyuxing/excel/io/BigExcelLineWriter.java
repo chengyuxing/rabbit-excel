@@ -6,10 +6,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -84,19 +82,17 @@ public class BigExcelLineWriter implements IOutput, AutoCloseable {
     }
 
     @Override
-    public byte[] toBytes() throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+    public void writeTo(OutputStream out) throws IOException {
         workbook.write(out);
-        return out.toByteArray();
     }
 
     @Override
-    public void saveTo(String path) throws IOException {
+    public void writeTo(String path) throws IOException {
         String suffix = "";
         if (!path.endsWith(".xlsx")) {
             suffix = ".xlsx";
         }
-        saveTo(Files.newOutputStream(Paths.get(path + suffix)));
+        IOutput.super.writeTo(path + suffix);
     }
 
     @Override

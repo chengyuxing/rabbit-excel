@@ -10,10 +10,8 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.OutputStream;
 import java.util.*;
 
 /**
@@ -74,23 +72,16 @@ public class ExcelWriter implements IOutput, AutoCloseable {
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return excel bytes
-     */
     @Override
-    public byte[] toBytes() throws IOException {
+    public void writeTo(OutputStream out) throws IOException {
         if (xSheets.isEmpty()) {
             throw new IllegalStateException("there is nothing to write! don't you invoke method write(...) to add sheet data?");
         }
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
         for (XSheet s : xSheets) {
             Sheet sheet = workbook.createSheet(s.getName());
             writeSheet(sheet, s);
         }
         workbook.write(out);
-        return out.toByteArray();
     }
 
     /**
@@ -100,7 +91,7 @@ public class ExcelWriter implements IOutput, AutoCloseable {
      * @throws IOException ioEx
      */
     @Override
-    public void saveTo(String path) throws IOException {
+    public void writeTo(String path) throws IOException {
         String suffix = "";
         if (!path.endsWith(".xlsx") && !path.endsWith(".xls")) {
             suffix = ".xlsx";
@@ -108,7 +99,7 @@ public class ExcelWriter implements IOutput, AutoCloseable {
                 suffix = ".xls";
             }
         }
-        saveTo(Files.newOutputStream(Paths.get(path + suffix)));
+        IOutput.super.writeTo(path + suffix);
     }
 
     /**
