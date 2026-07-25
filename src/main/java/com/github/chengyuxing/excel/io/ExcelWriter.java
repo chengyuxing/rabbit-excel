@@ -118,7 +118,7 @@ public class ExcelWriter implements IOutput, AutoCloseable {
                 columnCount = data.get(0).size();
             }
             for (int i = 0; i < data.size(); i++) {
-                Row row = sheet.createRow(xHeader.getMaxRowNumber() + 1 + i);
+                Row row = sheet.createRow(xHeader.getNextRowNumber() + i);
                 DataRow item = data.get(i);
                 for (int j = 0; j < columnCount; j++) {
                     Cell cell = row.createCell(j);
@@ -173,10 +173,10 @@ public class ExcelWriter implements IOutput, AutoCloseable {
         Map<Integer, Integer> indexWidths = xSheet.getIndexColumnWidths();
         if (!fieldWidths.isEmpty()) {
             for (XRow xRow : xHeader.getRows()) {
-                for (String field : xRow.getFields()) {
-                    if (fieldWidths.containsKey(field)) {
-                        int idx = xRow.getCellAddresses(field).getFirstColumn();
-                        int width = fieldWidths.get(field);
+                for (XCell xCell : xRow.getCells()) {
+                    if (fieldWidths.containsKey(xCell.getField())) {
+                        int idx = xCell.getAddress().getFirstColumn();
+                        int width = fieldWidths.get(xCell.getField());
                         sheet.setColumnWidth(idx, width);
                     }
                 }
@@ -189,8 +189,8 @@ public class ExcelWriter implements IOutput, AutoCloseable {
 
     protected void autoColumnWidth(Sheet sheet, XHeader xHeader) {
         for (XRow xRow : xHeader.getRows()) {
-            for (String field : xRow.getFields()) {
-                sheet.autoSizeColumn(xRow.getCellAddresses(field).getFirstColumn());
+            for (XCell xCell : xRow.getCells()) {
+                sheet.autoSizeColumn(xCell.getAddress().getFirstColumn());
             }
         }
     }
@@ -227,7 +227,7 @@ public class ExcelWriter implements IOutput, AutoCloseable {
         // if has no field mapping relation, use DataRow's names as default
         if (!hasFieldMap) {
             XRow xRow = new XRow();
-            int startRow = xHeader.getMaxRowNumber() + 1;
+            int startRow = xHeader.getNextRowNumber();
             if (!defaultHeaderFields.isEmpty()) {
                 for (int i = 0; i < defaultHeaderFields.size(); i++) {
                     xRow.add(defaultHeaderFields.get(i), new CellRangeAddress(startRow, startRow, i, i));
@@ -243,38 +243,38 @@ public class ExcelWriter implements IOutput, AutoCloseable {
 
         // total rows
         // create rows first.
-        for (int i = 0; i <= xHeader.getMaxRowNumber(); i++) {
+        for (int i = 0; i <= xHeader.getNextRowNumber(); i++) {
             sheet.createRow(i);
         }
         List<XRow> xRows = xHeader.getRows();
         for (XRow xRow : xRows) {
-            List<String> keys = xRow.getFields();
-            for (String key : keys) {
-                CellRangeAddress cellAddresses = xRow.getCellAddresses(key);
-                if (hasFieldMap && !key.startsWith("#") && !key.endsWith("#")) {
-                    if (fields.length > cellAddresses.getFirstColumn()) {
-                        fields[cellAddresses.getFirstColumn()] = key;
+            for (XCell xCell : xRow.getCells()) {
+                String key = xCell.getField();
+                CellRangeAddress address = xCell.getAddress();
+                if (hasFieldMap && xRow.isHasField(xCell.getField())) {
+                    if (fields.length > address.getFirstColumn()) {
+                        fields[address.getFirstColumn()] = key;
                     }
                 }
                 // merge columns first
-                if (cellAddresses.getFirstColumn() != cellAddresses.getLastColumn() || cellAddresses.getFirstRow() != cellAddresses.getLastRow()) {
-                    sheet.addMergedRegion(cellAddresses);
+                if (address.getFirstColumn() != address.getLastColumn() || address.getFirstRow() != address.getLastRow()) {
+                    sheet.addMergedRegion(address);
                 }
                 // get created row by actually row number
-                Row headerRow = sheet.getRow(cellAddresses.getFirstRow());
-                Cell cell = headerRow.createCell(cellAddresses.getFirstColumn());
-                cell.setCellValue(xRow.getName(key));
+                Row headerRow = sheet.getRow(address.getFirstRow());
+                Cell cell = headerRow.createCell(address.getFirstColumn());
+                cell.setCellValue(xCell.getText());
 
-                CellStyle cellStyle = null;
+                CellStyle style = null;
                 // cell style first
-                XStyle xCellStyle = xRow.getStyle(key);
+                XStyle xCellStyle = xCell.getStyle();
                 if (xCellStyle != null) {
-                    cellStyle = xCellStyle.getStyle();
+                    style = xCellStyle.getStyle();
                 } else if (xStyle != null) {
                     // row style
-                    cellStyle = xStyle.getStyle();
+                    style = xStyle.getStyle();
                 }
-                cell.setCellStyle(cellStyle);
+                cell.setCellStyle(style);
             }
         }
         return Arrays.asList(fields);

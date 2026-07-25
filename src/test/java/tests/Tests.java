@@ -124,7 +124,8 @@ public class Tests {
 
         XRow header2 = new XRow();
         header2.set("age", "年龄", CellRangeAddress.valueOf("B4:B4"))
-                .set("address", "地址", CellRangeAddress.valueOf("H4:H4"));
+                .set("address", "地址", CellRangeAddress.valueOf("H4:H4"))
+        ;
 
         headers.add(title);
         headers.add(header);
@@ -132,12 +133,12 @@ public class Tests {
 
         System.out.println(headers.getRows());
 
-//        XSheet sheet = XSheet.of("SheetC",
-//                list2.stream().map(DataRow::ofMap).collect(Collectors.toList()),
-//                headers);
-//        sheet.setHeaderStyle(seaBlue);
-//
-//        writer.write(sheet).saveTo("/Users/chengyuxing/Downloads/datarow2");
+        XSheet sheet = XSheet.of("SheetC",
+                list2.stream().map(DataRow::ofMap).collect(Collectors.toList()),
+                headers);
+        sheet.setHeaderStyle(seaBlue);
+
+        writer.write(sheet).writeTo("/Users/chengyuxing/Downloads/datarow2");
     }
 
     static final List<Map<String, Object>> list = new ArrayList<>();
@@ -154,6 +155,17 @@ public class Tests {
             row.put("f", i % 3 == 0 ? "" : "ok");
             list.add(row);
         }
+    }
+
+    @Test
+    public void writeTest2() throws IOException {
+        ExcelWriter writer = Excels.bigExcelWriter();
+        XRow title = new XRow();
+        title.add("表格1");
+        title.set("姓名", "测试者");
+        title.set("d", "时间");
+        XSheet sheet = XSheet.of("Sheet1", list.stream().map(DataRow::ofMap).collect(Collectors.toList()), title);
+        writer.write(sheet).writeTo("/Users/chengyuxing/Downloads/aaaa");
     }
 
     @Test
@@ -194,7 +206,7 @@ public class Tests {
         header.add(xRow);
         header.add(xRow1);
 
-//        XSheet xSheet = XSheet.of("sheet100", list.stream().map(DataRow::ofMap).collect(Collectors.toList()), header);
+        XSheet xSheet = XSheet.of("sheet100", list.stream().map(DataRow::ofMap).collect(Collectors.toList()), header);
 //        xSheet.setEmptyColumn("--");    //填充空单元格
 //        xSheet.setHeaderStyle(bold);
 //        xSheet.setCellStyle((row, key, coord) -> {
@@ -209,7 +221,7 @@ public class Tests {
 //            return null;
 //        });
 //
-//        writer.write(xSheet).saveTo("/Users/chengyuxing/Downloads/sxxx");
+        writer.write(xSheet).writeTo("/Users/chengyuxing/Downloads/sxxx");
     }
 
     @Test

@@ -27,16 +27,16 @@ public class XSheet {
     /**
      * Returns a sheet data container with initial args.
      *
-     * @param name    sheet name
-     * @param data    data
-     * @param xHeader header
+     * @param name   sheet name
+     * @param data   data
+     * @param header header
      * @return XSheet
      */
-    public static XSheet of(String name, List<DataRow> data, XHeader xHeader) {
+    public static XSheet of(String name, List<DataRow> data, XHeader header) {
         XSheet sheet = new XSheet();
         sheet.setName(name);
         sheet.setData(data);
-        sheet.setXHeader(xHeader);
+        sheet.setXHeader(header);
         return sheet;
     }
 
@@ -49,13 +49,9 @@ public class XSheet {
      * @return XSheet
      */
     public static XSheet of(String name, List<DataRow> data, XRow header) {
-        XSheet sheet = new XSheet();
-        sheet.setName(name);
-        sheet.setData(data);
         XHeader xHeader = new XHeader();
         xHeader.add(header);
-        sheet.setXHeader(xHeader);
-        return sheet;
+        return of(name, data, xHeader);
     }
 
     /**

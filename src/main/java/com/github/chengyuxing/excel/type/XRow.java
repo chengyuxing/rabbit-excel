@@ -2,7 +2,7 @@ package com.github.chengyuxing.excel.type;
 
 import com.github.chengyuxing.excel.style.XStyle;
 import org.apache.poi.ss.util.CellRangeAddress;
-import com.github.chengyuxing.common.tuple.Triple;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +11,8 @@ import java.util.List;
  * Excel complex cell builder.
  */
 public class XRow {
-    private final List<String> fields = new ArrayList<>();
-    private final List<Triple<String, CellRangeAddress, XStyle>> value = new ArrayList<>();
+    private final List<XCell> cells = new ArrayList<>();
     private boolean hasFieldMap = false;
-    private int i = 0;
     private int maxRowNumber = 0;
     private int maxColumnNumber = 0;
 
@@ -31,29 +29,33 @@ public class XRow {
      * @param cellStyle     cell style
      * @return current row
      */
-    public XRow set(String field, String name, CellRangeAddress cellAddresses, XStyle cellStyle) {
-        CellRangeAddress actuallyAddress;
-        if (isEmpty()) {
-            if (cellAddresses != null) {
-                actuallyAddress = cellAddresses;
-            } else {
-                actuallyAddress = new CellRangeAddress(0, 0, 0, 0);
-            }
-        } else {
-            if (cellAddresses != null) {
-                actuallyAddress = cellAddresses;
-            } else {
-                CellRangeAddress lastAddress = value.get(value.size() - 1).getItem2();
-                actuallyAddress = new CellRangeAddress(lastAddress.getFirstRow(), lastAddress.getFirstRow(), lastAddress.getLastColumn() + 1, lastAddress.getLastColumn() + 1);
-            }
-        }
+    public XRow set(@NotNull String field, @NotNull String name, CellRangeAddress cellAddresses, XStyle cellStyle) {
+        CellRangeAddress next = nextAddress(cellAddresses);
 
-        value.add(Triple.of(name, actuallyAddress, cellStyle));
-        fields.add(field);
-        if (!field.startsWith("#") && !field.endsWith("#")) {
+        maxRowNumber = Math.max(maxRowNumber, next.getLastRow());
+        maxColumnNumber = Math.max(maxColumnNumber, next.getLastColumn());
+
+        XCell cell = new XCell(field, name, next, cellStyle);
+        cells.add(cell);
+
+        if (isHasField(field)) {
             hasFieldMap = true;
         }
         return this;
+    }
+
+    protected CellRangeAddress nextAddress(CellRangeAddress specified) {
+        if (specified != null) {
+            return specified;
+        }
+        if (cells.isEmpty()) {
+            return new CellRangeAddress(0, 0, 0, 0);
+        }
+        CellRangeAddress last = cells.get(cells.size() - 1).getAddress();
+        return new CellRangeAddress(last.getFirstRow(),
+                last.getFirstRow(),
+                last.getLastColumn() + 1,
+                last.getLastColumn() + 1);
     }
 
     /**
@@ -108,7 +110,7 @@ public class XRow {
      * @return current row
      */
     public XRow add(String name, CellRangeAddress cellAddresses, XStyle cellStyle) {
-        return set("#" + i++ + "#", name, cellAddresses, cellStyle);
+        return set("#" + cells.size() + "#", name, cellAddresses, cellStyle);
     }
 
     /**
@@ -147,70 +149,34 @@ public class XRow {
         return add(name, null, null);
     }
 
+    public void layoutAutoRows(int row) {
+        for (XCell cell : cells) {
+            if (cell.isAutoRow()) {
+                CellRangeAddress a = cell.getAddress();
+                a.setFirstRow(row);
+                a.setLastRow(row);
+            }
+        }
+    }
+
     public boolean isEmpty() {
-        return fields.isEmpty();
+        return cells.isEmpty();
     }
 
-    /**
-     * Get data field index.
-     *
-     * @param field data field
-     * @return field index
-     */
-    public int getIndex(String field) {
-        return fields.indexOf(field);
-    }
-
-    /**
-     * Get display name.
-     *
-     * @param field data field
-     * @return display name
-     */
-    public String getName(String field) {
-        int index = getIndex(field);
-        return value.get(index).getItem1();
-    }
-
-    public CellRangeAddress getCellAddresses(String field) {
-        int index = getIndex(field);
-        return value.get(index).getItem2();
-    }
-
-    public XStyle getStyle(String field) {
-        int index = getIndex(field);
-        return value.get(index).getItem3();
-    }
-
-    /**
-     * Get all fields.
-     *
-     * @return all fields
-     */
-    public List<String> getFields() {
-        return fields;
+    public List<XCell> getCells() {
+        return cells;
     }
 
     public int getMaxRowNumber() {
-        for (String field : fields) {
-            CellRangeAddress cellAddresses = getCellAddresses(field);
-            int rowNumber = cellAddresses.getLastRow();
-            if (rowNumber > maxRowNumber) {
-                maxRowNumber = rowNumber;
-            }
-        }
         return maxRowNumber;
     }
 
     public int getMaxColumnNumber() {
-        for (String field : fields) {
-            CellRangeAddress cellAddresses = getCellAddresses(field);
-            int columnNumber = cellAddresses.getLastColumn();
-            if (columnNumber > maxColumnNumber) {
-                maxColumnNumber = columnNumber;
-            }
-        }
         return maxColumnNumber;
+    }
+
+    public boolean isHasField(String field) {
+        return !field.startsWith("#") && !field.endsWith("#");
     }
 
     /**

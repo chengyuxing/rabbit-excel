@@ -1,7 +1,5 @@
 package com.github.chengyuxing.excel.type;
 
-import org.apache.poi.ss.util.CellRangeAddress;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,8 +8,8 @@ import java.util.List;
  */
 public class XHeader {
     private final List<XRow> rows = new ArrayList<>();
-    private int maxRowNumber = 0;
     private int maxColumnNumber = 0;
+    private int nextRowNumber = 0;
 
     /**
      * Add one row.
@@ -20,25 +18,9 @@ public class XHeader {
      * @return XHeader
      */
     public XHeader add(XRow row) {
-        if (!isEmpty()) {
-            XRow lastRow = rows.get(rows.size() - 1);
-            int maxLastRow = 0;
-            for (String field : lastRow.getFields()) {
-                CellRangeAddress cellAddresses = lastRow.getCellAddresses(field);
-                if (cellAddresses.getLastRow() > maxLastRow) {
-                    maxLastRow = cellAddresses.getLastRow();
-                }
-            }
-            List<String> currentFields = row.getFields();
-            for (String currentField : currentFields) {
-                CellRangeAddress cellAddresses = row.getCellAddresses(currentField);
-                if (cellAddresses.getFirstRow() == 0 && cellAddresses.getLastRow() == 0) {
-                    int nextRowNumber = maxLastRow + 1;
-                    cellAddresses.setFirstRow(nextRowNumber);
-                    cellAddresses.setLastRow(nextRowNumber);
-                }
-            }
-        }
+        row.layoutAutoRows(nextRowNumber);
+        nextRowNumber = Math.max(nextRowNumber, row.getMaxRowNumber() + 1);
+        maxColumnNumber = Math.max(maxColumnNumber, row.getMaxColumnNumber());
         rows.add(row);
         return this;
     }
@@ -52,14 +34,8 @@ public class XHeader {
      *
      * @return max row number
      */
-    public int getMaxRowNumber() {
-        for (XRow xRow : rows) {
-            int rowNumber = xRow.getMaxRowNumber();
-            if (rowNumber > maxRowNumber) {
-                maxRowNumber = rowNumber;
-            }
-        }
-        return maxRowNumber;
+    public int getNextRowNumber() {
+        return nextRowNumber;
     }
 
     /**
@@ -68,12 +44,6 @@ public class XHeader {
      * @return max column number
      */
     public int getMaxColumnNumber() {
-        for (XRow xRow : rows) {
-            int columnNumber = xRow.getMaxColumnNumber();
-            if (columnNumber > maxColumnNumber) {
-                maxColumnNumber = columnNumber;
-            }
-        }
         return maxColumnNumber;
     }
 
