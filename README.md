@@ -8,7 +8,7 @@
   <dependency>
       <groupId>com.github.chengyuxing</groupId>
       <artifactId>rabbit-excel</artifactId>
-      <version>4.3.53</version>
+      <version>4.3.54</version>
   </dependency>
   ```
 
@@ -18,7 +18,7 @@
 
 ```java
 String[]names=new String[]{"name","age","address"};
-        try(Stream<DataRow> stream=Excels.reader(Paths.get("D:/test/test.xlsx"))
+        try(Stream<DataRow> stream = Excels.reader(Paths.get("D:/test/test.xlsx"))
         .sheetAt(1) // specify 1st sheet
         .namedHeaderAt(0) // specify header index
         .fieldMap(names)    //data fields mapping to columns
