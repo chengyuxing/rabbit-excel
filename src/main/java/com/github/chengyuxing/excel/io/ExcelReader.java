@@ -157,12 +157,12 @@ public class ExcelReader {
         for (int i = 0, j = row.getLastCellNum(); i < j; i++) {
             Cell cell = row.getCell(i);
             if (skipBlankHeaderCol) {
-                if (cell == null || StringUtils.isBlank(cell.toString())) {
+                if (cell == null || StringUtils.isEmpty(cell.toString())) {
                     continue;
                 }
             }
             String name;
-            if (cell != null && !StringUtils.isEmpty(cell.toString())) {
+            if (cell != null && !StringUtils.isBlank(cell.toString())) {
                 name = cell.toString().replace("#", "");
             } else {
                 name = "#" + i + "#";
