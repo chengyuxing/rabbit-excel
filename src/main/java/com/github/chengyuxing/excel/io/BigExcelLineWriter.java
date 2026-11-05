@@ -59,11 +59,7 @@ public class BigExcelLineWriter implements IOutput, AutoCloseable {
             while (iterator.hasNext()) {
                 Cell cell = row.createCell(i);
                 Object value = iterator.next();
-                if (value == null) {
-                    cell.setCellValue("");
-                } else {
-                    cell.setCellValue(value.toString());
-                }
+                ExcelUtils.setCellObject(cell, value, "");
                 i++;
             }
             return;
@@ -83,6 +79,7 @@ public class BigExcelLineWriter implements IOutput, AutoCloseable {
 
     @Override
     public void writeTo(OutputStream out) throws IOException {
+        workbook.setForceFormulaRecalculation(true);
         workbook.write(out);
     }
 

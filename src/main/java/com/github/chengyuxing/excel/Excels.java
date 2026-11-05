@@ -18,7 +18,7 @@ public final class Excels {
     /**
      * Returns an ExcelReader with InputStream.
      *
-     * @param stream excel file inputStream
+     * @param stream Excel file inputStream
      * @return ExcelReader
      * @throws IOException ex
      */

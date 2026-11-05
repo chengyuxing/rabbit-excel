@@ -81,6 +81,7 @@ public class ExcelWriter implements IOutput, AutoCloseable {
             Sheet sheet = workbook.createSheet(s.getName());
             writeSheet(sheet, s);
         }
+        workbook.setForceFormulaRecalculation(true);
         workbook.write(out);
     }
 
@@ -160,11 +161,7 @@ public class ExcelWriter implements IOutput, AutoCloseable {
     }
 
     protected void setCellValue(Cell cell, Object value, String other) {
-        if (value == null || value.equals("")) {
-            cell.setCellValue(other);
-        } else {
-            cell.setCellValue(value.toString());
-        }
+        ExcelUtils.setCellObject(cell, value, other);
     }
 
     protected void manualColumnWidth(Sheet sheet, XSheet xSheet) {

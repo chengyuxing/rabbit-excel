@@ -27,7 +27,7 @@ public class ExcelReader {
     /**
      * Constructs an ExcelReader with InputStream.
      *
-     * @param inputStream excel file inputStream
+     * @param inputStream Excel file inputStream
      * @throws IOException if io error
      */
     public ExcelReader(InputStream inputStream) throws IOException {
@@ -209,7 +209,7 @@ public class ExcelReader {
                 }
                 return cell.getNumericCellValue();
             case FORMULA:
-                return cell.getCellFormula();
+                return ExcelUtils.FORMULA_PREFIX + cell.getCellFormula() + ExcelUtils.FORMULA_SUFFIX;
             default:
                 return "";
         }
