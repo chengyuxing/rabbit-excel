@@ -3,7 +3,7 @@ package com.github.chengyuxing.excel.io;
 import com.github.chengyuxing.common.DataRow;
 import com.github.chengyuxing.common.TiFunction;
 import com.github.chengyuxing.common.io.IOutput;
-import com.github.chengyuxing.excel.style.XStyle;
+import com.github.chengyuxing.excel.style.StyleConfig;
 import com.github.chengyuxing.excel.type.*;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -19,7 +19,7 @@ import java.util.*;
  */
 public class ExcelWriter implements IOutput, AutoCloseable {
     protected final Workbook workbook;
-    protected final List<XSheet> xSheets = new ArrayList<>();
+    protected final List<SheetConfig> sheetConfigs = new ArrayList<>();
 
     /**
      * Constructs an ExcelWriter with Workbook.
@@ -35,8 +35,8 @@ public class ExcelWriter implements IOutput, AutoCloseable {
      *
      * @return empty cell style
      */
-    public XStyle createStyle() {
-        return new XStyle(workbook.createCellStyle());
+    public StyleConfig createStyle() {
+        return new StyleConfig(workbook.createCellStyle());
     }
 
     /**
@@ -51,33 +51,33 @@ public class ExcelWriter implements IOutput, AutoCloseable {
     /**
      * Append more than one sheets ready to save.
      *
-     * @param xSheet sheet
+     * @param sheetConfig sheet
      * @param more   more sheet
      * @return ExcelWriter
      */
-    public ExcelWriter write(XSheet xSheet, XSheet... more) {
-        xSheets.add(xSheet);
-        xSheets.addAll(Arrays.asList(more));
+    public ExcelWriter add(SheetConfig sheetConfig, SheetConfig... more) {
+        sheetConfigs.add(sheetConfig);
+        sheetConfigs.addAll(Arrays.asList(more));
         return this;
     }
 
     /**
      * Append more than one sheets ready to save.
      *
-     * @param xSheets sheets
+     * @param sheetConfigs sheets
      * @return ExcelWriter
      */
-    public ExcelWriter write(Collection<XSheet> xSheets) {
-        this.xSheets.addAll(xSheets);
+    public ExcelWriter add(Collection<SheetConfig> sheetConfigs) {
+        this.sheetConfigs.addAll(sheetConfigs);
         return this;
     }
 
     @Override
     public void writeTo(OutputStream out) throws IOException {
-        if (xSheets.isEmpty()) {
+        if (sheetConfigs.isEmpty()) {
             throw new IllegalStateException("there is nothing to write! don't you invoke method write(...) to add sheet data?");
         }
-        for (XSheet s : xSheets) {
+        for (SheetConfig s : sheetConfigs) {
             Sheet sheet = workbook.createSheet(s.getName());
             writeSheet(sheet, s);
         }
@@ -107,27 +107,27 @@ public class ExcelWriter implements IOutput, AutoCloseable {
      * Write data to sheet.
      *
      * @param sheet  sheet
-     * @param xSheet sheet data container
+     * @param sheetConfig sheet data container
      */
-    protected void writeSheet(Sheet sheet, XSheet xSheet) {
-        XHeader xHeader = xSheet.getXHeader();
-        List<DataRow> data = xSheet.getData();
+    protected void writeSheet(Sheet sheet, SheetConfig sheetConfig) {
+        HeaderConfig headerConfig = sheetConfig.getXHeader();
+        List<DataRow> data = sheetConfig.getData();
         if (data != null && !data.isEmpty()) {
-            List<String> fields = buildHeaderSpecial(sheet, xHeader, data.get(0).names(), xSheet.getHeaderStyle());
-            int columnCount = xHeader.getMaxColumnNumber() + 1;
-            if (xHeader.isEmpty()) {
+            List<String> fields = buildHeaderSpecial(sheet, headerConfig, data.get(0).names(), sheetConfig.getHeaderStyle());
+            int columnCount = headerConfig.getMaxColumnNumber() + 1;
+            if (headerConfig.isEmpty()) {
                 columnCount = data.get(0).size();
             }
             for (int i = 0; i < data.size(); i++) {
-                Row row = sheet.createRow(xHeader.getNextRowNumber() + i);
+                Row row = sheet.createRow(headerConfig.getNextRowNumber() + i);
                 DataRow item = data.get(i);
                 for (int j = 0; j < columnCount; j++) {
                     Cell cell = row.createCell(j);
                     String field = fields.get(j);
                     Object value = item.get(field);
-                    setCellValue(cell, value, xSheet.getEmptyColumn());
+                    setCellValue(cell, value);
 
-                    TiFunction<DataRow, String, Coord, CellAttr> caFn = xSheet.getCellAttr();
+                    TiFunction<DataRow, String, Coord, CellAttr> caFn = sheetConfig.getCellAttr();
                     if (caFn != null) {
                         CellAttr attr = caFn.apply(item, field, new Coord(i, j));
                         if (attr != null) {
@@ -135,7 +135,7 @@ public class ExcelWriter implements IOutput, AutoCloseable {
                             if (address != null) {
                                 sheet.addMergedRegion(address);
                             }
-                            XStyle style = attr.getCellStyle();
+                            StyleConfig style = attr.getCellStyle();
                             if (style != null) {
                                 cell.setCellStyle(style.getStyle());
                             }
@@ -144,36 +144,36 @@ public class ExcelWriter implements IOutput, AutoCloseable {
                 }
             }
         } else {
-            buildHeaderSpecial(sheet, xHeader, Collections.emptyList(), xSheet.getHeaderStyle());
+            buildHeaderSpecial(sheet, headerConfig, Collections.emptyList(), sheetConfig.getHeaderStyle());
         }
         // if big excel writer, do not set column width
         if (workbook instanceof SXSSFWorkbook) {
             return;
         }
-        if (xHeader.isEmpty()) {
+        if (headerConfig.isEmpty()) {
             if (data != null && !data.isEmpty()) {
                 autoColumnWidth(sheet, data.get(0).size());
             }
         } else {
-            autoColumnWidth(sheet, xHeader);
+            autoColumnWidth(sheet, headerConfig);
         }
-        manualColumnWidth(sheet, xSheet);
+        manualColumnWidth(sheet, sheetConfig);
     }
 
-    protected void setCellValue(Cell cell, Object value, String other) {
-        ExcelUtils.setCellObject(cell, value, other);
+    protected void setCellValue(Cell cell, Object value) {
+        ExcelUtils.setCellObject(cell, value);
     }
 
-    protected void manualColumnWidth(Sheet sheet, XSheet xSheet) {
-        XHeader xHeader = xSheet.getXHeader();
-        Map<String, Integer> fieldWidths = xSheet.getFieldColumnWidths();
-        Map<Integer, Integer> indexWidths = xSheet.getIndexColumnWidths();
+    protected void manualColumnWidth(Sheet sheet, SheetConfig sheetConfig) {
+        HeaderConfig headerConfig = sheetConfig.getXHeader();
+        Map<String, Integer> fieldWidths = sheetConfig.getFieldColumnWidths();
+        Map<Integer, Integer> indexWidths = sheetConfig.getIndexColumnWidths();
         if (!fieldWidths.isEmpty()) {
-            for (XRow xRow : xHeader.getRows()) {
-                for (XCell xCell : xRow.getCells()) {
-                    if (fieldWidths.containsKey(xCell.getField())) {
-                        int idx = xCell.getAddress().getFirstColumn();
-                        int width = fieldWidths.get(xCell.getField());
+            for (RowConfig rowConfig : headerConfig.getRows()) {
+                for (CellConfig cellConfig : rowConfig.getCells()) {
+                    if (fieldWidths.containsKey(cellConfig.getField())) {
+                        int idx = cellConfig.getAddress().getFirstColumn();
+                        int width = fieldWidths.get(cellConfig.getField());
                         sheet.setColumnWidth(idx, width);
                     }
                 }
@@ -184,10 +184,10 @@ public class ExcelWriter implements IOutput, AutoCloseable {
         }
     }
 
-    protected void autoColumnWidth(Sheet sheet, XHeader xHeader) {
-        for (XRow xRow : xHeader.getRows()) {
-            for (XCell xCell : xRow.getCells()) {
-                sheet.autoSizeColumn(xCell.getAddress().getFirstColumn());
+    protected void autoColumnWidth(Sheet sheet, HeaderConfig headerConfig) {
+        for (RowConfig rowConfig : headerConfig.getRows()) {
+            for (CellConfig cellConfig : rowConfig.getCells()) {
+                sheet.autoSizeColumn(cellConfig.getAddress().getFirstColumn());
             }
         }
     }
@@ -198,57 +198,57 @@ public class ExcelWriter implements IOutput, AutoCloseable {
         }
     }
 
-    protected List<String> buildHeaderDefault(Sheet sheet, List<String> defaultHeaderFields, XStyle xStyle) {
+    protected List<String> buildHeaderDefault(Sheet sheet, List<String> defaultHeaderFields, StyleConfig styleConfig) {
         Row headerRow = sheet.createRow(0);
         for (int i = 0; i < defaultHeaderFields.size(); i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(defaultHeaderFields.get(i));
-            if (xStyle != null) {
-                cell.setCellStyle(xStyle.getStyle());
+            if (styleConfig != null) {
+                cell.setCellStyle(styleConfig.getStyle());
             }
         }
         return defaultHeaderFields;
     }
 
-    protected List<String> buildHeaderSpecial(Sheet sheet, XHeader xHeader, List<String> defaultHeaderFields, XStyle xStyle) {
+    protected List<String> buildHeaderSpecial(Sheet sheet, HeaderConfig headerConfig, List<String> defaultHeaderFields, StyleConfig styleConfig) {
         // just use DataRow's names default
-        if (xHeader.isEmpty()) {
-            return buildHeaderDefault(sheet, defaultHeaderFields, xStyle);
+        if (headerConfig.isEmpty()) {
+            return buildHeaderDefault(sheet, defaultHeaderFields, styleConfig);
         }
         boolean hasFieldMap = false;
-        for (XRow xRow : xHeader.getRows()) {
-            hasFieldMap = xRow.isHasFieldMap();
+        for (RowConfig rowConfig : headerConfig.getRows()) {
+            hasFieldMap = rowConfig.isHasFieldMap();
         }
 
         String[] fields = new String[0];
         // if has no field mapping relation, use DataRow's names as default
         if (!hasFieldMap) {
-            XRow xRow = new XRow();
-            int startRow = xHeader.getNextRowNumber();
+            RowConfig rowConfig = new RowConfig();
+            int startRow = headerConfig.getNextRowNumber();
             if (!defaultHeaderFields.isEmpty()) {
                 for (int i = 0; i < defaultHeaderFields.size(); i++) {
-                    xRow.add(defaultHeaderFields.get(i), new CellRangeAddress(startRow, startRow, i, i));
+                    rowConfig.add(defaultHeaderFields.get(i), new CellRangeAddress(startRow, startRow, i, i));
                 }
-                xHeader.add(xRow);
+                headerConfig.add(rowConfig);
                 fields = defaultHeaderFields.toArray(new String[0]);
             }
         } else {
             // maybe header's length > dataRow's length
-            fields = new String[xHeader.getMaxColumnNumber() + 1];
+            fields = new String[headerConfig.getMaxColumnNumber() + 1];
             Arrays.fill(fields, "___");
         }
 
         // total rows
         // create rows first.
-        for (int i = 0; i <= xHeader.getNextRowNumber(); i++) {
+        for (int i = 0; i <= headerConfig.getNextRowNumber(); i++) {
             sheet.createRow(i);
         }
-        List<XRow> xRows = xHeader.getRows();
-        for (XRow xRow : xRows) {
-            for (XCell xCell : xRow.getCells()) {
-                String key = xCell.getField();
-                CellRangeAddress address = xCell.getAddress();
-                if (hasFieldMap && xRow.isHasField(xCell.getField())) {
+        List<RowConfig> rowConfigs = headerConfig.getRows();
+        for (RowConfig rowConfig : rowConfigs) {
+            for (CellConfig cellConfig : rowConfig.getCells()) {
+                String key = cellConfig.getField();
+                CellRangeAddress address = cellConfig.getAddress();
+                if (hasFieldMap && rowConfig.isHasField(cellConfig.getField())) {
                     if (fields.length > address.getFirstColumn()) {
                         fields[address.getFirstColumn()] = key;
                     }
@@ -260,16 +260,16 @@ public class ExcelWriter implements IOutput, AutoCloseable {
                 // get created row by actually row number
                 Row headerRow = sheet.getRow(address.getFirstRow());
                 Cell cell = headerRow.createCell(address.getFirstColumn());
-                cell.setCellValue(xCell.getText());
+                cell.setCellValue(cellConfig.getText());
 
                 CellStyle style = null;
                 // cell style first
-                XStyle xCellStyle = xCell.getStyle();
+                StyleConfig xCellStyle = cellConfig.getStyle();
                 if (xCellStyle != null) {
                     style = xCellStyle.getStyle();
-                } else if (xStyle != null) {
+                } else if (styleConfig != null) {
                     // row style
-                    style = xStyle.getStyle();
+                    style = styleConfig.getStyle();
                 }
                 cell.setCellStyle(style);
             }
@@ -283,6 +283,6 @@ public class ExcelWriter implements IOutput, AutoCloseable {
         if (workbook instanceof SXSSFWorkbook) {
             ((SXSSFWorkbook) workbook).dispose();
         }
-        xSheets.clear();
+        sheetConfigs.clear();
     }
 }

@@ -1,16 +1,16 @@
 package com.github.chengyuxing.excel.type;
 
-import com.github.chengyuxing.excel.style.XStyle;
+import com.github.chengyuxing.excel.style.StyleConfig;
 import org.apache.poi.ss.util.CellRangeAddress;
 
-public class XCell {
+public class CellConfig {
     private final String field;
     private final String text;
     private final CellRangeAddress address;
-    private final XStyle style;
-    private boolean autoRow = false;
+    private final StyleConfig style;
+    private final boolean autoRow;
 
-    public XCell(String field, String text, CellRangeAddress address, XStyle style) {
+    public CellConfig(String field, String text, CellRangeAddress address, StyleConfig style) {
         this.field = field;
         this.text = text;
         this.address = address;
@@ -30,7 +30,7 @@ public class XCell {
         return text;
     }
 
-    public XStyle getStyle() {
+    public StyleConfig getStyle() {
         return style;
     }
 

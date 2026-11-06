@@ -1,17 +1,17 @@
 package com.github.chengyuxing.excel.type;
 
-import com.github.chengyuxing.excel.style.XStyle;
+import com.github.chengyuxing.excel.style.StyleConfig;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 public class CellAttr {
-    private XStyle cellStyle;
+    private StyleConfig cellStyle;
     private CellRangeAddress cellRangeAddress;
 
-    public XStyle getCellStyle() {
+    public StyleConfig getCellStyle() {
         return cellStyle;
     }
 
-    public void setCellStyle(XStyle cellStyle) {
+    public void setCellStyle(StyleConfig cellStyle) {
         this.cellStyle = cellStyle;
     }
 

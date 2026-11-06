@@ -7,7 +7,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
 
 import java.io.FileOutputStream;
@@ -20,15 +19,15 @@ public class Tests3 {
 
     @Test
     public void lineWriter() throws Exception {
-        try (BigExcelLineWriter writer = Excels.bigExcelLineWriter()) {
+        try (BigExcelLineWriter writer = Excels.bigLineWriter()) {
             Sheet sheet = writer.createSheet("用户表");
-            writer.writeRow(sheet, "ID", "姓名", "随机数", "UUID");
+            writer.addRow(sheet, "ID", "姓名", "随机数", "UUID");
             for (int i = 0; i < 150000; i++) {
-                writer.writeRow(sheet, i, "cyx", Math.random() * 1000, UUID.randomUUID());
+                writer.addRow(sheet, i, "cyx", Math.random() * 1000, UUID.randomUUID());
             }
 
             Sheet sheet2 = writer.createSheet("空表");
-            writer.writeRow(sheet2, "年龄", "家庭住址", "成员", "电话");
+            writer.addRow(sheet2, "年龄", "家庭住址", "成员", "电话");
 
             writer.writeTo(Paths.get("/Users/chengyuxing/Downloads/big_excel_line_writer.xlsx"));
         }

@@ -50,7 +50,7 @@ public class BigExcelLineWriter implements IOutput, AutoCloseable {
      * @param sheet   sheet
      * @param rowData row data
      */
-    public void writeRow(Sheet sheet, Collection<Object> rowData) {
+    public void addRow(Sheet sheet, Collection<Object> rowData) {
         String sheetName = sheet.getSheetName();
         if (sheetRowNumber.containsKey(sheetName)) {
             Row row = sheet.createRow(sheetRowNumber.get(sheetName).getAndIncrement());
@@ -59,7 +59,7 @@ public class BigExcelLineWriter implements IOutput, AutoCloseable {
             while (iterator.hasNext()) {
                 Cell cell = row.createCell(i);
                 Object value = iterator.next();
-                ExcelUtils.setCellObject(cell, value, "");
+                ExcelUtils.setCellObject(cell, value);
                 i++;
             }
             return;
@@ -73,8 +73,8 @@ public class BigExcelLineWriter implements IOutput, AutoCloseable {
      * @param sheet   sheet
      * @param rowData row data
      */
-    public void writeRow(Sheet sheet, Object... rowData) {
-        writeRow(sheet, Arrays.asList(rowData));
+    public void addRow(Sheet sheet, Object... rowData) {
+        addRow(sheet, Arrays.asList(rowData));
     }
 
     @Override

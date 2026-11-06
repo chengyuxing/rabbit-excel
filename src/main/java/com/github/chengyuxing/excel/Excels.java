@@ -34,7 +34,9 @@ public final class Excels {
      * @throws IOException ex
      */
     public static ExcelReader reader(String name) throws IOException {
-        return reader(Files.newInputStream(Paths.get(name)));
+        try (InputStream in = Files.newInputStream(Paths.get(name))) {
+            return reader(in);
+        }
     }
 
     /**
@@ -45,7 +47,9 @@ public final class Excels {
      * @throws IOException ex
      */
     public static ExcelReader reader(Path path) throws IOException {
-        return reader(Files.newInputStream(path));
+        try (InputStream in = Files.newInputStream(path)) {
+            return reader(in);
+        }
     }
 
     /**
@@ -56,7 +60,9 @@ public final class Excels {
      * @throws IOException ex
      */
     public static ExcelReader reader(File file) throws IOException {
-        return reader(Files.newInputStream(file.toPath()));
+        try (InputStream in = Files.newInputStream(file.toPath())) {
+            return reader(in);
+        }
     }
 
     /**
@@ -84,7 +90,7 @@ public final class Excels {
      *
      * @return big ExcelWriter
      */
-    public static ExcelWriter bigExcelWriter() {
+    public static ExcelWriter bigWriter() {
         SXSSFWorkbook workbook = new SXSSFWorkbook(18);
         return new ExcelWriter(workbook);
     }
@@ -94,7 +100,7 @@ public final class Excels {
      *
      * @return big Excel line-mode Writer
      */
-    public static BigExcelLineWriter bigExcelLineWriter() {
+    public static BigExcelLineWriter bigLineWriter() {
         return new BigExcelLineWriter(false);
     }
 }

@@ -2,7 +2,7 @@ package com.github.chengyuxing.excel.type;
 
 import com.github.chengyuxing.common.DataRow;
 import com.github.chengyuxing.common.TiFunction;
-import com.github.chengyuxing.excel.style.XStyle;
+import com.github.chengyuxing.excel.style.StyleConfig;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,17 +11,16 @@ import java.util.Map;
 /**
  * Excel Sheet data container.
  */
-public class XSheet {
+public class SheetConfig {
     private String name;
-    private XHeader xHeader;
+    private HeaderConfig headerConfig;
     private List<DataRow> data;
-    private String emptyColumn = "";
     private final Map<String, Integer> fieldColumnWidths = new HashMap<>();
     private final Map<Integer, Integer> indexColumnWidths = new HashMap<>();
     private TiFunction<DataRow, String, Coord, CellAttr> cellAttr;
-    private XStyle headerStyle;
+    private StyleConfig headerStyle;
 
-    XSheet() {
+    SheetConfig() {
     }
 
     /**
@@ -32,8 +31,8 @@ public class XSheet {
      * @param header header
      * @return XSheet
      */
-    public static XSheet of(String name, List<DataRow> data, XHeader header) {
-        XSheet sheet = new XSheet();
+    public static SheetConfig of(String name, List<DataRow> data, HeaderConfig header) {
+        SheetConfig sheet = new SheetConfig();
         sheet.setName(name);
         sheet.setData(data);
         sheet.setXHeader(header);
@@ -48,10 +47,10 @@ public class XSheet {
      * @param header header
      * @return XSheet
      */
-    public static XSheet of(String name, List<DataRow> data, XRow header) {
-        XHeader xHeader = new XHeader();
-        xHeader.add(header);
-        return of(name, data, xHeader);
+    public static SheetConfig of(String name, List<DataRow> data, RowConfig header) {
+        HeaderConfig headerConfig = new HeaderConfig();
+        headerConfig.add(header);
+        return of(name, data, headerConfig);
     }
 
     /**
@@ -61,16 +60,16 @@ public class XSheet {
      * @param data data
      * @return XSheet
      */
-    public static XSheet of(String name, List<DataRow> data) {
-        return of(name, data, new XHeader());
+    public static SheetConfig of(String name, List<DataRow> data) {
+        return of(name, data, new HeaderConfig());
     }
 
-    public XSheet columnWidth(String field, int width) {
+    public SheetConfig columnWidth(String field, int width) {
         this.fieldColumnWidths.put(field, width);
         return this;
     }
 
-    public XSheet columnWidth(int index, int width) {
+    public SheetConfig columnWidth(int index, int width) {
         this.indexColumnWidths.put(index, width);
         return this;
     }
@@ -83,11 +82,11 @@ public class XSheet {
         this.indexColumnWidths.putAll(columnWidths);
     }
 
-    public XStyle getHeaderStyle() {
+    public StyleConfig getHeaderStyle() {
         return headerStyle;
     }
 
-    public void setHeaderStyle(XStyle headerStyle) {
+    public void setHeaderStyle(StyleConfig headerStyle) {
         this.headerStyle = headerStyle;
     }
 
@@ -107,16 +106,12 @@ public class XSheet {
         this.name = name;
     }
 
-    public XHeader getXHeader() {
-        return xHeader;
+    public HeaderConfig getXHeader() {
+        return headerConfig;
     }
 
-    void setXHeader(XHeader xHeader) {
-        this.xHeader = xHeader;
-    }
-
-    public String getEmptyColumn() {
-        return emptyColumn;
+    void setXHeader(HeaderConfig headerConfig) {
+        this.headerConfig = headerConfig;
     }
 
     public Map<String, Integer> getFieldColumnWidths() {
@@ -125,10 +120,6 @@ public class XSheet {
 
     public Map<Integer, Integer> getIndexColumnWidths() {
         return indexColumnWidths;
-    }
-
-    public void setEmptyColumn(String emptyColumn) {
-        this.emptyColumn = emptyColumn;
     }
 
     public TiFunction<DataRow, String, Coord, CellAttr> getCellAttr() {

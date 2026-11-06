@@ -1,6 +1,6 @@
 package com.github.chengyuxing.excel.type;
 
-import com.github.chengyuxing.excel.style.XStyle;
+import com.github.chengyuxing.excel.style.StyleConfig;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,8 +10,8 @@ import java.util.List;
 /**
  * Excel complex cell builder.
  */
-public class XRow {
-    private final List<XCell> cells = new ArrayList<>();
+public class RowConfig {
+    private final List<CellConfig> cells = new ArrayList<>();
     private boolean hasFieldMap = false;
     private int maxRowNumber = 0;
     private int maxColumnNumber = 0;
@@ -21,7 +21,7 @@ public class XRow {
      *
      * @param field         data field
      * @param name          display name
-     * @param cellAddresses cell address like excel standard format<br>
+     * @param cellAddresses cell address like Excel standard format<br>
      *                      e.g. {@code A1:F3}:
      *                      <blockquote>
      *                      <pre>CellRangeAddress.valueOf("A1:F3")</pre>
@@ -29,13 +29,13 @@ public class XRow {
      * @param cellStyle     cell style
      * @return current row
      */
-    public XRow set(@NotNull String field, @NotNull String name, CellRangeAddress cellAddresses, XStyle cellStyle) {
+    public RowConfig set(@NotNull String field, @NotNull String name, CellRangeAddress cellAddresses, StyleConfig cellStyle) {
         CellRangeAddress next = nextAddress(cellAddresses);
 
         maxRowNumber = Math.max(maxRowNumber, next.getLastRow());
         maxColumnNumber = Math.max(maxColumnNumber, next.getLastColumn());
 
-        XCell cell = new XCell(field, name, next, cellStyle);
+        CellConfig cell = new CellConfig(field, name, next, cellStyle);
         cells.add(cell);
 
         if (isHasField(field)) {
@@ -63,14 +63,14 @@ public class XRow {
      *
      * @param field         data field
      * @param name          display name
-     * @param cellAddresses cell address like excel standard format<br>
+     * @param cellAddresses cell address like Excel standard format<br>
      *                      e.g. {@code A1:F3}:
      *                      <blockquote>
      *                      <pre>CellRangeAddress.valueOf("A1:F3")</pre>
      *                      </blockquote>
      * @return 当前行数据
      */
-    public XRow set(String field, String name, CellRangeAddress cellAddresses) {
+    public RowConfig set(String field, String name, CellRangeAddress cellAddresses) {
         return set(field, name, cellAddresses, null);
     }
 
@@ -82,7 +82,7 @@ public class XRow {
      * @param cellStyle cell style
      * @return current row
      */
-    public XRow set(String field, String name, XStyle cellStyle) {
+    public RowConfig set(String field, String name, StyleConfig cellStyle) {
         return set(field, name, null, cellStyle);
     }
 
@@ -93,7 +93,7 @@ public class XRow {
      * @param name  display name
      * @return current row
      */
-    public XRow set(String field, String name) {
+    public RowConfig set(String field, String name) {
         return set(field, name, null, null);
     }
 
@@ -101,7 +101,7 @@ public class XRow {
      * Add header column display name.
      *
      * @param name          display name
-     * @param cellAddresses cell address like excel standard format<br>
+     * @param cellAddresses cell address like Excel standard format<br>
      *                      e.g. {@code A1:F3}:
      *                      <blockquote>
      *                      <pre>CellRangeAddress.valueOf("A1:F3")</pre>
@@ -109,7 +109,7 @@ public class XRow {
      * @param cellStyle     cell style
      * @return current row
      */
-    public XRow add(String name, CellRangeAddress cellAddresses, XStyle cellStyle) {
+    public RowConfig add(String name, CellRangeAddress cellAddresses, StyleConfig cellStyle) {
         return set("#" + cells.size() + "#", name, cellAddresses, cellStyle);
     }
 
@@ -117,14 +117,14 @@ public class XRow {
      * Add header column display name.
      *
      * @param name          display name
-     * @param cellAddresses cell address like excel standard format<br>
+     * @param cellAddresses cell address like Excel standard format<br>
      *                      e.g. {@code A1:F3}:
      *                      <blockquote>
      *                      <pre>CellRangeAddress.valueOf("A1:F3")</pre>
      *                      </blockquote>
      * @return current row
      */
-    public XRow add(String name, CellRangeAddress cellAddresses) {
+    public RowConfig add(String name, CellRangeAddress cellAddresses) {
         return add(name, cellAddresses, null);
     }
 
@@ -135,7 +135,7 @@ public class XRow {
      * @param cellStyle cell style
      * @return current row
      */
-    public XRow add(String name, XStyle cellStyle) {
+    public RowConfig add(String name, StyleConfig cellStyle) {
         return add(name, null, cellStyle);
     }
 
@@ -145,12 +145,12 @@ public class XRow {
      * @param name display name
      * @return current row
      */
-    public XRow add(String name) {
+    public RowConfig add(String name) {
         return add(name, null, null);
     }
 
     public void layoutAutoRows(int row) {
-        for (XCell cell : cells) {
+        for (CellConfig cell : cells) {
             if (cell.isAutoRow()) {
                 CellRangeAddress a = cell.getAddress();
                 a.setFirstRow(row);
@@ -163,7 +163,7 @@ public class XRow {
         return cells.isEmpty();
     }
 
-    public List<XCell> getCells() {
+    public List<CellConfig> getCells() {
         return cells;
     }
 

@@ -2,14 +2,15 @@ package tests;
 
 import com.github.chengyuxing.common.DataRow;
 import com.github.chengyuxing.excel.Excels;
+import com.github.chengyuxing.excel.io.BigExcelLineWriter;
 import com.github.chengyuxing.excel.io.ExcelWriter;
-import com.github.chengyuxing.excel.style.XStyle;
+import com.github.chengyuxing.excel.style.StyleConfig;
 import com.github.chengyuxing.excel.style.props.Border;
 import com.github.chengyuxing.excel.style.props.FillGround;
 import com.github.chengyuxing.excel.type.CellAttr;
-import com.github.chengyuxing.excel.type.XHeader;
-import com.github.chengyuxing.excel.type.XRow;
-import com.github.chengyuxing.excel.type.XSheet;
+import com.github.chengyuxing.excel.type.HeaderConfig;
+import com.github.chengyuxing.excel.type.RowConfig;
+import com.github.chengyuxing.excel.type.SheetConfig;
 import com.healthmarketscience.jackcess.Row;
 import com.healthmarketscience.jackcess.Table;
 import com.healthmarketscience.jackcess.*;
@@ -99,13 +100,13 @@ public class Tests {
 
         ExcelWriter writer = Excels.writer();
 
-        XStyle center = writer.createStyle();
+        StyleConfig center = writer.createStyle();
         center.setStyle(s -> {
             s.setAlignment(HorizontalAlignment.CENTER);
             s.setVerticalAlignment(VerticalAlignment.CENTER);
         });
 
-        XStyle seaBlue = writer.createStyle();
+        StyleConfig seaBlue = writer.createStyle();
         seaBlue.setForeground(new FillGround(IndexedColors.LIGHT_ORANGE, FillPatternType.SOLID_FOREGROUND));
         seaBlue.setBorder(new Border(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT));
         seaBlue.setStyle(s -> {
@@ -113,16 +114,16 @@ public class Tests {
             s.setVerticalAlignment(VerticalAlignment.CENTER);
         });
 
-        XHeader headers = new XHeader();
+        HeaderConfig headers = new HeaderConfig();
 
-        XRow title = new XRow();
+        RowConfig title = new RowConfig();
         title.add("学生信息统计表", CellRangeAddress.valueOf("A1:C2"));
 
-        XRow header = new XRow();
+        RowConfig header = new RowConfig();
         header.set("name", "姓名", CellRangeAddress.valueOf("A3:A4"), center)
                 .add("其他信息", CellRangeAddress.valueOf("B3:C3"), center);
 
-        XRow header2 = new XRow();
+        RowConfig header2 = new RowConfig();
         header2.set("age", "年龄", CellRangeAddress.valueOf("B4:B4"))
                 .set("address", "地址", CellRangeAddress.valueOf("H4:H4"))
         ;
@@ -133,12 +134,12 @@ public class Tests {
 
         System.out.println(headers.getRows());
 
-        XSheet sheet = XSheet.of("SheetC",
+        SheetConfig sheet = SheetConfig.of("SheetC",
                 list2.stream().map(DataRow::ofMap).collect(Collectors.toList()),
                 headers);
         sheet.setHeaderStyle(seaBlue);
 
-        writer.write(sheet).writeTo("/Users/chengyuxing/Downloads/datarow2");
+        writer.add(sheet).writeTo("/Users/chengyuxing/Downloads/datarow2");
     }
 
     static final List<Map<String, Object>> list = new ArrayList<>();
@@ -159,27 +160,27 @@ public class Tests {
 
     @Test
     public void writeTest2() throws IOException {
-        ExcelWriter writer = Excels.bigExcelWriter();
-        XRow title = new XRow();
+        ExcelWriter writer = Excels.bigWriter();
+        RowConfig title = new RowConfig();
         title.add("表格1");
         title.set("姓名", "测试者");
         title.set("d", "时间");
-        XSheet sheet = XSheet.of("Sheet1", list.stream().map(DataRow::ofMap).collect(Collectors.toList()), title);
-        writer.write(sheet).writeTo("/Users/chengyuxing/Downloads/aaaa");
+        SheetConfig sheet = SheetConfig.of("Sheet1", list.stream().map(DataRow::ofMap).collect(Collectors.toList()), title);
+        writer.add(sheet).writeTo("/Users/chengyuxing/Downloads/aaaa");
     }
 
     @Test
     public void writeTest() throws Exception {
 
-        ExcelWriter writer = Excels.bigExcelWriter();
+        ExcelWriter writer = Excels.bigWriter();
 
-        XStyle danger = writer.createStyle();
+        StyleConfig danger = writer.createStyle();
         danger.setBorder(new Border(BorderStyle.DOUBLE, IndexedColors.RED));
 
-        XStyle warning = writer.createStyle();
+        StyleConfig warning = writer.createStyle();
         warning.setBorder(new Border(BorderStyle.DOUBLE, IndexedColors.GREEN));
 
-        XStyle bold = writer.createStyle();
+        StyleConfig bold = writer.createStyle();
         bold.setStyle(s -> {
             Font font = writer.createFont();
             font.setBold(true);
@@ -187,26 +188,26 @@ public class Tests {
             s.setFont(font);
         });
 
-        XStyle center = writer.createStyle();
+        StyleConfig center = writer.createStyle();
         center.setStyle(s -> {
             s.setAlignment(HorizontalAlignment.CENTER);
             s.setVerticalAlignment(VerticalAlignment.CENTER);
         });
 
-        XRow xRow = new XRow();
-        xRow.add("随机数据统计表", CellRangeAddress.valueOf("A1:F2"), center);
-        XHeader header = new XHeader();
-        XRow xRow1 = new XRow();
-        xRow1.set("d", "日期时间", CellRangeAddress.valueOf("A3:A3"));
-        xRow1.set("编号", "序号");
-        xRow1.set("c", "分数");
-        xRow1.set("城市", "所在城市");
-        xRow1.set("姓名", "测试者");
-        xRow1.set("f", "状态");
-        header.add(xRow);
-        header.add(xRow1);
+        RowConfig rowConfig = new RowConfig();
+        rowConfig.add("随机数据统计表", CellRangeAddress.valueOf("A1:F2"), center);
+        HeaderConfig header = new HeaderConfig();
+        RowConfig rowConfig1 = new RowConfig();
+        rowConfig1.set("d", "日期时间", CellRangeAddress.valueOf("A3:A3"));
+        rowConfig1.set("编号", "序号");
+        rowConfig1.set("c", "分数");
+        rowConfig1.set("城市", "所在城市");
+        rowConfig1.set("姓名", "测试者");
+        rowConfig1.set("f", "状态");
+        header.add(rowConfig);
+        header.add(rowConfig1);
 
-        XSheet xSheet = XSheet.of("sheet100", list.stream().map(DataRow::ofMap).collect(Collectors.toList()), header);
+        SheetConfig sheetConfig = SheetConfig.of("sheet100", list.stream().map(DataRow::ofMap).collect(Collectors.toList()), header);
 //        xSheet.setEmptyColumn("--");    //填充空单元格
 //        xSheet.setHeaderStyle(bold);
 //        xSheet.setCellStyle((row, key, coord) -> {
@@ -221,7 +222,7 @@ public class Tests {
 //            return null;
 //        });
 //
-        writer.write(xSheet).writeTo("/Users/chengyuxing/Downloads/sxxx");
+        writer.add(sheetConfig).writeTo("/Users/chengyuxing/Downloads/sxxx");
     }
 
     @Test
@@ -244,9 +245,9 @@ public class Tests {
                     .limit(100)
                     .map(i -> DataRow.of("id", i, "name", "cyx_" + i, "address", "昆明市" + i))
                     .collect(Collectors.toList());
-            XSheet sheet = XSheet.of("sheet1", rows);
+            SheetConfig sheet = SheetConfig.of("sheet1", rows);
 
-            XStyle center = writer.createStyle();
+            StyleConfig center = writer.createStyle();
             center.setStyle(s -> {
                 s.setAlignment(HorizontalAlignment.CENTER);
                 s.setVerticalAlignment(VerticalAlignment.CENTER);
@@ -263,7 +264,26 @@ public class Tests {
                 }
                 return attr;
             });
-            writer.write(sheet).writeTo(Paths.get("/Users/chengyuxing/Downloads/a.xlsx"));
+            writer.add(sheet).writeTo(Paths.get("/Users/chengyuxing/Downloads/a.xlsx"));
+        }
+    }
+
+    @Test
+    public void testFormula() throws Exception {
+        try (ExcelWriter writer = Excels.writer()) {
+            DataRow row = DataRow.of("name", "cyx", "math", 22, "phy", 87, "score", "{{SUM(B1:C1)}}");
+            writer.add(SheetConfig.of("Sheet1", Collections.singletonList(row)))
+                    .writeTo("/Users/chengyuxing/Downloads/abcde.xlsx");
+        }
+    }
+
+    @Test
+    public void testFormula2() throws Exception {
+        try (BigExcelLineWriter writer = Excels.bigLineWriter()) {
+            DataRow row = DataRow.of("name", "cyx", "math", 22, "phy", 87, "score", "{{SUM(B1:C1)}}");
+            Sheet sheet = writer.createSheet("Sheet1");
+            writer.addRow(sheet, row.values());
+            writer.writeTo("/Users/chengyuxing/Downloads/abcdef.xlsx");
         }
     }
 }

@@ -6,14 +6,14 @@ import org.apache.poi.ss.usermodel.CellStyle;
 
 import java.util.function.Consumer;
 
-public class XStyle {
+public class StyleConfig {
     private boolean built = false;
     private final CellStyle style;
     private FillGround background;
     private FillGround foreground;
     private Border border;
 
-    public XStyle(CellStyle style) {
+    public StyleConfig(CellStyle style) {
         this.style = style;
     }
 

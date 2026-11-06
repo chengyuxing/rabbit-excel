@@ -31,7 +31,7 @@ public class ExcelReader {
      * @throws IOException if io error
      */
     public ExcelReader(InputStream inputStream) throws IOException {
-        workbook = WorkbookFactory.create(inputStream);
+        this.workbook = WorkbookFactory.create(inputStream);
     }
 
     /**

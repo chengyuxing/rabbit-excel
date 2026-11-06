@@ -6,8 +6,8 @@ import java.util.List;
 /**
  * Excel header builder.
  */
-public class XHeader {
-    private final List<XRow> rows = new ArrayList<>();
+public class HeaderConfig {
+    private final List<RowConfig> rows = new ArrayList<>();
     private int maxColumnNumber = 0;
     private int nextRowNumber = 0;
 
@@ -17,7 +17,7 @@ public class XHeader {
      * @param row row
      * @return XHeader
      */
-    public XHeader add(XRow row) {
+    public HeaderConfig add(RowConfig row) {
         row.layoutAutoRows(nextRowNumber);
         nextRowNumber = Math.max(nextRowNumber, row.getMaxRowNumber() + 1);
         maxColumnNumber = Math.max(maxColumnNumber, row.getMaxColumnNumber());
@@ -52,7 +52,7 @@ public class XHeader {
      *
      * @return header data rows
      */
-    public List<XRow> getRows() {
+    public List<RowConfig> getRows() {
         return rows;
     }
 }
