@@ -1,5 +1,6 @@
 package tests;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.chengyuxing.common.DataRow;
 import com.github.chengyuxing.excel.Excels;
 import com.github.chengyuxing.excel.io.BigExcelLineWriter;
@@ -7,10 +8,7 @@ import com.github.chengyuxing.excel.io.ExcelWriter;
 import com.github.chengyuxing.excel.style.StyleConfig;
 import com.github.chengyuxing.excel.style.props.Border;
 import com.github.chengyuxing.excel.style.props.FillGround;
-import com.github.chengyuxing.excel.type.CellAttr;
-import com.github.chengyuxing.excel.type.HeaderConfig;
-import com.github.chengyuxing.excel.type.RowConfig;
-import com.github.chengyuxing.excel.type.SheetConfig;
+import com.github.chengyuxing.excel.type.*;
 import com.healthmarketscience.jackcess.Row;
 import com.healthmarketscience.jackcess.Table;
 import com.healthmarketscience.jackcess.*;
@@ -195,7 +193,7 @@ public class Tests {
         });
 
         RowConfig rowConfig = new RowConfig();
-        rowConfig.add("随机数据统计表", CellRangeAddress.valueOf("A1:F2"), center);
+        rowConfig.add("随机数据统计表", CellRangeAddress.valueOf("A1:F2"), danger);
         HeaderConfig header = new HeaderConfig();
         RowConfig rowConfig1 = new RowConfig();
         rowConfig1.set("d", "日期时间", CellRangeAddress.valueOf("A3:A3"));
@@ -207,21 +205,32 @@ public class Tests {
         header.add(rowConfig);
         header.add(rowConfig1);
 
-        SheetConfig sheetConfig = SheetConfig.of("sheet100", list.stream().map(DataRow::ofMap).collect(Collectors.toList()), header);
-//        xSheet.setEmptyColumn("--");    //填充空单元格
-//        xSheet.setHeaderStyle(bold);
-//        xSheet.setCellStyle((row, key, coord) -> {
-//            c字段大于700则添加红框
-//            if (key.equals("c") && (double) row.get("c") > 700) {
-//                return danger;
-//            }
-//             第一行和第五行添加绿框
-//            if (coord.getX() == 0 || coord.getX() == 5) {
-//                return warning;
-//            }
-//            return null;
-//        });
-//
+        ObjectMapper JSON = new ObjectMapper();
+
+        String jsonHeader = JSON.writeValueAsString(header.toData());
+
+        System.out.println(jsonHeader);
+
+        HeaderConfig fromJson = HeaderConfig.fromData(JSON.readValue(jsonHeader, HeaderConfig.HeaderConfigData.class));
+        System.out.println(fromJson);
+
+        SheetConfig sheetConfig = SheetConfig.of("sheet100", list.stream().map(DataRow::ofMap).collect(Collectors.toList()), fromJson);
+        sheetConfig.setHeaderStyle(bold);
+        sheetConfig.setCellAttr((row, key, coord) -> {
+            // c字段大于700则添加红框
+            if (key.equals("c") && (double) row.get("c") > 700) {
+                CellAttr attr = new CellAttr();
+                attr.setCellStyle(danger);
+                return attr;
+            }
+            // 第一行和第五行添加绿框
+            if (coord.getX() == 0 || coord.getX() == 5) {
+                CellAttr attr = new CellAttr();
+                attr.setCellStyle(warning);
+                return attr;
+            }
+            return null;
+        });
         writer.add(sheetConfig).writeTo("/Users/chengyuxing/Downloads/sxxx");
     }
 

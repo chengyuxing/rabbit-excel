@@ -8,14 +8,12 @@ public class CellConfig {
     private final String text;
     private final CellRangeAddress address;
     private final StyleConfig style;
-    private final boolean autoRow;
 
     public CellConfig(String field, String text, CellRangeAddress address, StyleConfig style) {
         this.field = field;
         this.text = text;
         this.address = address;
         this.style = style;
-        this.autoRow = address.getFirstRow() == 0 && address.getLastRow() == 0;
     }
 
     public CellRangeAddress getAddress() {
@@ -35,6 +33,6 @@ public class CellConfig {
     }
 
     public boolean isAutoRow() {
-        return autoRow;
+        return address.getFirstRow() == 0 && address.getLastRow() == 0;
     }
 }
