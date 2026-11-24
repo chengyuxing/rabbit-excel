@@ -150,6 +150,7 @@ public class RowConfig {
     }
 
     public void layoutAutoRows(int row) {
+        maxRowNumber = Math.max(maxRowNumber, row);
         for (CellConfig cell : cells) {
             if (cell.isAutoRow()) {
                 CellRangeAddress a = cell.getAddress();

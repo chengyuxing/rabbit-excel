@@ -170,7 +170,7 @@ public class Tests {
     @Test
     public void writeTest() throws Exception {
 
-        ExcelWriter writer = Excels.bigWriter();
+        ExcelWriter writer = Excels.writer();
 
         StyleConfig danger = writer.createStyle();
         danger.setBorder(new Border(BorderStyle.DOUBLE, IndexedColors.RED));
@@ -196,7 +196,7 @@ public class Tests {
         rowConfig.add("随机数据统计表", CellRangeAddress.valueOf("A1:F2"), danger);
         HeaderConfig header = new HeaderConfig();
         RowConfig rowConfig1 = new RowConfig();
-        rowConfig1.set("d", "日期时间", CellRangeAddress.valueOf("A3:A3"));
+        rowConfig1.set("d", "日期时间");
         rowConfig1.set("编号", "序号");
         rowConfig1.set("c", "分数");
         rowConfig1.set("城市", "所在城市");
@@ -214,7 +214,8 @@ public class Tests {
         HeaderConfig fromJson = HeaderConfig.fromData(JSON.readValue(jsonHeader, HeaderConfig.HeaderConfigData.class));
         System.out.println(fromJson);
 
-        SheetConfig sheetConfig = SheetConfig.of("sheet100", list.stream().map(DataRow::ofMap).collect(Collectors.toList()), fromJson);
+        List<DataRow> data = list.stream().map(DataRow::ofMap).collect(Collectors.toList());
+        SheetConfig sheetConfig = SheetConfig.of("sheet100", data, fromJson);
         sheetConfig.setHeaderStyle(bold);
         sheetConfig.setCellAttr((row, key, coord) -> {
             // c字段大于700则添加红框
