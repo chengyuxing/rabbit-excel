@@ -7,7 +7,7 @@ public class CellConfig {
     private final String field;
     private final String text;
     private final CellRangeAddress address;
-    private final StyleConfig style;
+    private StyleConfig style;
 
     public CellConfig(String field, String text, CellRangeAddress address, StyleConfig style) {
         this.field = field;
@@ -30,6 +30,10 @@ public class CellConfig {
 
     public StyleConfig getStyle() {
         return style;
+    }
+
+    public void setStyle(StyleConfig style) {
+        this.style = style;
     }
 
     public boolean isAutoRow() {
