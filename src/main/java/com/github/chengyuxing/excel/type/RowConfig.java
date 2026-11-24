@@ -171,8 +171,16 @@ public class RowConfig {
         return maxRowNumber;
     }
 
+    void setMaxRowNumber(int maxRowNumber) {
+        this.maxRowNumber = maxRowNumber;
+    }
+
     public int getMaxColumnNumber() {
         return maxColumnNumber;
+    }
+
+    void setMaxColumnNumber(int maxColumnNumber) {
+        this.maxColumnNumber = maxColumnNumber;
     }
 
     public boolean isHasField(String field) {
@@ -186,5 +194,9 @@ public class RowConfig {
      */
     public boolean isHasFieldMap() {
         return hasFieldMap;
+    }
+
+    void setHasFieldMap(boolean hasFieldMap) {
+        this.hasFieldMap = hasFieldMap;
     }
 }

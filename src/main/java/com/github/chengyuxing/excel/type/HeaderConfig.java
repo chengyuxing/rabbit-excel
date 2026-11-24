@@ -40,6 +40,10 @@ public class HeaderConfig {
         return nextRowNumber;
     }
 
+    void setNextRowNumber(int nextRowNumber) {
+        this.nextRowNumber = nextRowNumber;
+    }
+
     /**
      * Get header max column number.
      *
@@ -47,6 +51,10 @@ public class HeaderConfig {
      */
     public int getMaxColumnNumber() {
         return maxColumnNumber;
+    }
+
+    void setMaxColumnNumber(int maxColumnNumber) {
+        this.maxColumnNumber = maxColumnNumber;
     }
 
     /**
@@ -66,15 +74,19 @@ public class HeaderConfig {
      */
     public static HeaderConfig fromData(HeaderConfigData configData) {
         HeaderConfig headerConfig = new HeaderConfig();
+        headerConfig.setMaxColumnNumber(configData.getMaxColumnNumber());
+        headerConfig.setNextRowNumber(configData.getNextRowNumber());
         configData.getRows().forEach(rd -> {
             RowConfig rowConfig = new RowConfig();
-            rd.getCells().forEach(ccd ->
-                    rowConfig.set(ccd.getField(),
-                            ccd.getText(),
-                            CellRangeAddress.valueOf(ccd.getAddress()),
-                            null)
+            rowConfig.setHasFieldMap(rd.isHasFieldMap());
+            rowConfig.setMaxColumnNumber(rd.getMaxColumnNumber());
+            rowConfig.setMaxRowNumber(rd.getMaxRowNumber());
+            rd.getCells().forEach(ccd -> {
+                        CellConfig cc = new CellConfig(ccd.getField(), ccd.getText(), CellRangeAddress.valueOf(ccd.getAddress()), null);
+                        rowConfig.getCells().add(cc);
+                    }
             );
-            headerConfig.add(rowConfig);
+            headerConfig.getRows().add(rowConfig);
         });
         return headerConfig;
     }
@@ -96,14 +108,21 @@ public class HeaderConfig {
                 return cellConfigData;
             }).collect(Collectors.toList());
             rowConfigData.setCells(cells);
+            rowConfigData.setHasFieldMap(rc.isHasFieldMap());
+            rowConfigData.setMaxColumnNumber(rc.getMaxColumnNumber());
+            rowConfigData.setMaxRowNumber(rc.getMaxRowNumber());
             return rowConfigData;
         }).collect(Collectors.toList());
         headerConfigData.setRows(data);
+        headerConfigData.setMaxColumnNumber(getMaxColumnNumber());
+        headerConfigData.setNextRowNumber(getNextRowNumber());
         return headerConfigData;
     }
 
     public static class HeaderConfigData {
         private List<RowConfigData> rows = new ArrayList<>();
+        private int maxColumnNumber = 0;
+        private int nextRowNumber = 0;
 
         public List<RowConfigData> getRows() {
             return rows;
@@ -112,10 +131,29 @@ public class HeaderConfig {
         public void setRows(List<RowConfigData> rows) {
             this.rows = rows;
         }
+
+        public int getMaxColumnNumber() {
+            return maxColumnNumber;
+        }
+
+        public void setMaxColumnNumber(int maxColumnNumber) {
+            this.maxColumnNumber = maxColumnNumber;
+        }
+
+        public int getNextRowNumber() {
+            return nextRowNumber;
+        }
+
+        public void setNextRowNumber(int nextRowNumber) {
+            this.nextRowNumber = nextRowNumber;
+        }
     }
 
     public static class RowConfigData {
         private List<CellConfigData> cells = new ArrayList<>();
+        private boolean hasFieldMap = false;
+        private int maxRowNumber = 0;
+        private int maxColumnNumber = 0;
 
         public List<CellConfigData> getCells() {
             return cells;
@@ -123,6 +161,30 @@ public class HeaderConfig {
 
         public void setCells(List<CellConfigData> cells) {
             this.cells = cells;
+        }
+
+        public boolean isHasFieldMap() {
+            return hasFieldMap;
+        }
+
+        public void setHasFieldMap(boolean hasFieldMap) {
+            this.hasFieldMap = hasFieldMap;
+        }
+
+        public int getMaxRowNumber() {
+            return maxRowNumber;
+        }
+
+        public void setMaxRowNumber(int maxRowNumber) {
+            this.maxRowNumber = maxRowNumber;
+        }
+
+        public int getMaxColumnNumber() {
+            return maxColumnNumber;
+        }
+
+        public void setMaxColumnNumber(int maxColumnNumber) {
+            this.maxColumnNumber = maxColumnNumber;
         }
     }
 
